@@ -19,6 +19,7 @@
     --accent-orange-dark: #D48B10;
     --accent-red: #E55B5B;
     --accent-purple: #8B6FB0;
+    --accent-blue: #5B9BD5;
     --card-bg: #FFFFFF;
     --card-border: #D4C9B8;
   }
@@ -156,12 +157,12 @@
     color: var(--accent-red);
   }
 
-  /* Arrived title (same height as badge, centered) */
+  /* Arrived title (between badge and floating cat, centered) */
   .arrived-title {
     position: absolute;
-    top: 66px;
-    left: 36px;
-    right: 90px;
+    top: 17%;
+    left: 0;
+    right: 0;
     text-align: center;
     font-size: 18px;
     font-weight: 900;
@@ -192,6 +193,56 @@
   }
 
   .arrived-desc.show { display: block; }
+
+  /* Adopt toast (between object and world-info text) */
+  .adopt-toast {
+    position: absolute;
+    bottom: 200px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 5;
+  }
+
+  .adopt-toast.show {
+    opacity: 1;
+  }
+
+  .adopt-toast.fade {
+    opacity: 0;
+  }
+
+  /* World state info text */
+  .world-info {
+    position: absolute;
+    bottom: 80px;
+    left: 36px;
+    right: 36px;
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+
+  .world-info.hidden { display: none; }
+
+  .world-info-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+
+  .world-info-desc {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
 
   /* Bottom UI container */
   .bottom-ui {
@@ -504,6 +555,15 @@
         <path d="M69 46q8-14 12-4q4 10-3 14" stroke="var(--outline)" stroke-width="1.4" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
+
+    <!-- World state info -->
+    <div class="world-info" id="worldInfo">
+
+    <!-- Adopt toast -->
+    <div class="adopt-toast" id="adoptToast">입양하기 화면으로 연결됨</div>
+      <p class="world-info-title">현재 상태는 월드 상태입니다.</p>
+      <p class="world-info-desc">위의 오브젝트는 급식소 타일 오브젝트로,<br>보유한 고양이들이 상호작용 할 수 있습니다.</p>
+    </div>
   </div>
 
   <!-- UI OVERLAY -->
@@ -636,12 +696,14 @@
     const cat = document.getElementById('newCatWorld');
     const title = document.getElementById('arrivedTitle');
     const desc = document.getElementById('arrivedDesc');
+    const info = document.getElementById('worldInfo');
 
     if (s === 0) {
       ui.classList.remove('show');
       cat.classList.remove('show');
       title.classList.remove('show');
       desc.classList.remove('show');
+      info.classList.remove('hidden');
     } else if (s === 1) {
       ui.classList.add('show');
       timer.classList.add('show');
@@ -649,6 +711,7 @@
       cat.classList.remove('show');
       title.classList.remove('show');
       desc.classList.remove('show');
+      info.classList.add('hidden');
     } else {
       ui.classList.add('show');
       timer.classList.remove('show');
@@ -656,6 +719,7 @@
       cat.classList.add('show');
       title.classList.add('show');
       desc.classList.add('show');
+      info.classList.add('hidden');
     }
   }
 
@@ -666,8 +730,17 @@
   }
 
   function doAdopt() {
-    setState(1);
+    setState(0);
     remain = TOTAL;
+    const toast = document.getElementById('adoptToast');
+    toast.classList.remove('fade');
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.add('fade');
+    }, 1000);
+    setTimeout(() => {
+      toast.classList.remove('show', 'fade');
+    }, 1400);
   }
 
   function doRelease() {

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오프라인 보상 시스템 - 급식소 UI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+  :root {
+    --bg-cream: #F5EDE0;
+    --outline: #3A3A3A;
+    --outline-light: #8A8A7A;
+    --text-dark: #2D2D2D;
+    --text-mid: #5A5A5A;
+    --text-light: #8A8A8A;
+    --accent-green: #6BBF6B;
+    --accent-orange: #F5A623;
+    --accent-orange-dark: #D48B10;
+    --accent-red: #E55B5B;
+    --accent-purple: #8B6FB0;
+    --card-bg: #FFFFFF;
+    --card-border: #D4C9B8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #2A2520;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone-frame {
+    width: 390px;
+    height: 780px;
+    background: var(--bg-cream);
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* ===== WORLD (always visible) ===== */
+  .world {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--bg-cream) 0%, #EBE2D2 60%, #E0D7C6 100%);
+    z-index: 1;
+  }
+
+  .station-wrap {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 230px;
+    height: 170px;
+    z-index: 2;
+  }
+
+  /* Arrived cat on station */
+  .new-cat-world {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 86px;
+    height: 86px;
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .new-cat-world.show {
+    opacity: 1;
+    animation: catFloat 2.5s ease-in-out infinite;
+  }
+
+  @keyframes catFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+  }
+
+  /* ===== UI OVERLAY ===== */
+  .ui-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .ui-overlay.show {
+    opacity: 1;
+  }
+
+  .ui-overlay.show > * {
+    pointer-events: auto;
+  }
+
+  /* Badge (top-right) */
+  .badge {
+    position: absolute;
+    top: 54px;
+    right: 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.12s;
+  }
+
+  .badge:active { transform: scale(0.92); }
+
+  .badge-box {
+    width: 52px;
+    height: 52px;
+    background: var(--card-bg);
+    border: 2px solid var(--outline);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(60,50,30,0.1);
+  }
+
+  .badge-box .dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-red);
+    border-radius: 50%;
+    border: 2px solid var(--card-bg);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+
+  .badge-pct {
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-red);
+  }
+
+  /* Arrived title (same height as badge, centered) */
+  .arrived-title {
+    position: absolute;
+    top: 66px;
+    left: 36px;
+    right: 90px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text-dark);
+    display: none;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .arrived-title.show { display: block; }
+
+  /* Arrived description (between station and buttons) */
+  .arrived-desc {
+    position: absolute;
+    top: 58%;
+    left: 36px;
+    right: 36px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-red);
+    display: none;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    white-space: normal;
+    pointer-events: none;
+  }
+
+  .arrived-desc.show { display: block; }
+
+  /* Bottom UI container */
+  .bottom-ui {
+    position: absolute;
+    bottom: 140px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 36px;
+  }
+
+  /* Timer (state 1: waiting) */
+  .timer-group {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .timer-group.show { display: flex; }
+
+  .timer-label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-mid);
+    margin-bottom: 10px;
+  }
+
+  .timer-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+
+  .t-block {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 10px;
+    padding: 8px 0;
+    width: 70px;
+    text-align: center;
+  }
+
+  .t-block .digits {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--text-dark);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .t-block .unit {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .t-colon {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--text-light);
+    padding-bottom: 14px;
+  }
+
+  .progress-bar {
+    width: 210px;
+    height: 5px;
+    background: var(--card-border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-green);
+    border-radius: 3px;
+    transition: width 1s linear;
+  }
+
+  /* Buttons (state 2: arrived) */
+  .action-group {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .action-group.show { display: flex; }
+
+  .btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: 2px solid var(--outline);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .btn:active { transform: translateY(2px); }
+
+  .btn-adopt {
+    background: var(--accent-orange);
+    color: var(--text-dark);
+    box-shadow: 0 4px 0 var(--accent-orange-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-adopt:active { box-shadow: 0 2px 0 var(--accent-orange-dark); }
+
+  .ad-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  .btn-release {
+    background: var(--card-bg);
+    color: var(--text-dark);
+    box-shadow: 0 4px 0 var(--card-border);
+  }
+
+  .btn-release:active { box-shadow: 0 2px 0 var(--card-border); }
+
+  /* Close (x) */
+  .x-btn {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 38px;
+    background: var(--text-dark);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: transform 0.12s;
+  }
+
+  .x-btn:active { transform: translateX(-50%) scale(0.9); }
+
+  .x-btn svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; }
+
+  /* ===== PREVIEW POPUP ===== */
+  .preview-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(30,25,18,0.6);
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-dim.show { display: flex; }
+
+  .preview-card {
+    width: 260px;
+    background: var(--card-bg);
+    border-radius: 18px;
+    border: 2px solid var(--outline);
+    padding: 22px;
+    text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .pv-label { font-size: 10px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .pv-name { font-size: 18px; font-weight: 900; color: var(--text-dark); margin-bottom: 14px; }
+  .pv-art { width: 120px; height: 120px; margin: 0 auto 14px; }
+  .pv-desc { font-size: 12px; color: var(--text-mid); margin-bottom: 2px; }
+  .pv-pool { font-size: 11px; color: var(--text-light); margin-bottom: 16px; }
+
+  .pv-ok {
+    padding: 10px 44px;
+    background: var(--card-bg);
+    border: 2px solid var(--outline);
+    border-radius: 10px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--card-border);
+    transition: all 0.1s;
+  }
+
+  .pv-ok:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--card-border); }
+
+  /* ===== STATE SWITCHER (demo controls) ===== */
+  .switcher {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 60;
+  }
+
+  .sw-btn {
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    border: 2px solid var(--outline);
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+
+  .sw-btn.active { background: var(--text-dark); color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame" id="phone">
+
+  <!-- WORLD -->
+  <div class="world">
+    <div class="station-wrap" id="stationTap" onclick="tapStation()" style="cursor:pointer;">
+      <svg viewBox="0 0 230 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="115" cy="140" rx="100" ry="22" fill="#DDD3C0" stroke="var(--outline-light)" stroke-width="1.2" opacity="0.5"/>
+        <!-- Bowls -->
+        <ellipse cx="58" cy="125" rx="25" ry="9" fill="#EDE5D6" stroke="var(--outline-light)" stroke-width="1.3"/>
+        <ellipse cx="58" cy="122" rx="19" ry="6" fill="#F5EBD8"/>
+        <ellipse cx="115" cy="130" rx="25" ry="9" fill="#EDE5D6" stroke="var(--outline-light)" stroke-width="1.3"/>
+        <ellipse cx="115" cy="127" rx="19" ry="6" fill="#F5EBD8"/>
+        <ellipse cx="172" cy="125" rx="25" ry="9" fill="#EDE5D6" stroke="var(--outline-light)" stroke-width="1.3"/>
+        <ellipse cx="172" cy="122" rx="19" ry="6" fill="#F5EBD8"/>
+        <!-- Cat left (orange tabby) -->
+        <g transform="translate(40,72)">
+          <ellipse cx="18" cy="24" rx="17" ry="15" fill="#F0C070" stroke="var(--outline)" stroke-width="1.4"/>
+          <path d="M5 16l3-11h6l2 9" fill="#F0C070" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M25 16l2-9h6l3 11" fill="#F0C070" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M8 14l2.5-7h4l1.5 6" fill="#F8D8A0" stroke="none"/>
+          <path d="M26 14l1.5-6h4l2.5 7" fill="#F8D8A0" stroke="none"/>
+          <circle cx="12" cy="22" r="1.8" fill="var(--outline)"/>
+          <circle cx="24" cy="22" r="1.8" fill="var(--outline)"/>
+          <ellipse cx="18" cy="25.5" rx="2.5" ry="1.2" fill="#F0A8A0"/>
+          <path d="M11 16q2.5-1.5 5 0M16 15q2.5-1.5 5 0M21 16q2.5-1.5 5 0" stroke="#D4A048" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        </g>
+        <!-- Cat center (purple/grey) -->
+        <g transform="translate(92,62)">
+          <ellipse cx="22" cy="28" rx="20" ry="17" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.4"/>
+          <path d="M7 18l4-12h6l3 10" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M28 18l3-10h6l4 12" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M10 17l3-9h4l2.5 7" fill="#D8CCE8" stroke="none"/>
+          <path d="M29.5 16l2.5-7h4l3 9" fill="#D8CCE8" stroke="none"/>
+          <circle cx="15" cy="26" r="2" fill="var(--outline)"/>
+          <circle cx="29" cy="26" r="2" fill="var(--outline)"/>
+          <ellipse cx="22" cy="30" rx="3" ry="1.4" fill="#F0A8A0"/>
+        </g>
+        <!-- Cat right (brown) -->
+        <g transform="translate(150,72)">
+          <ellipse cx="18" cy="24" rx="17" ry="15" fill="#D4A870" stroke="var(--outline)" stroke-width="1.4"/>
+          <path d="M5 16l3-11h6l2 9" fill="#D4A870" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M25 16l2-9h6l3 11" fill="#D4A870" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M8 14l2.5-7h4l1.5 6" fill="#E0BD90" stroke="none"/>
+          <path d="M26 14l1.5-6h4l2.5 7" fill="#E0BD90" stroke="none"/>
+          <circle cx="12" cy="22" r="1.8" fill="var(--outline)"/>
+          <circle cx="24" cy="22" r="1.8" fill="var(--outline)"/>
+          <ellipse cx="18" cy="25.5" rx="2.5" ry="1.2" fill="#F0A8A0"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- New cat appears on station (state 2) -->
+    <div class="new-cat-world" id="newCatWorld">
+      <svg viewBox="0 0 86 86" fill="none">
+        <ellipse cx="43" cy="50" rx="28" ry="24" fill="#B8A0D0" stroke="var(--outline)" stroke-width="1.8"/>
+        <path d="M21 32l4-14h8l4 12" fill="#B8A0D0" stroke="var(--outline)" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M51 32l4-12h8l4 14" fill="#B8A0D0" stroke="var(--outline)" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M24 32l3-10h5l3 8" fill="#D0C0E0" stroke="none"/>
+        <path d="M53 30l3-8h5l3 10" fill="#D0C0E0" stroke="none"/>
+        <circle cx="34" cy="47" r="3" fill="var(--outline)"/>
+        <circle cx="52" cy="47" r="3" fill="var(--outline)"/>
+        <circle cx="35" cy="46" r="1" fill="white"/>
+        <circle cx="53" cy="46" r="1" fill="white"/>
+        <ellipse cx="43" cy="52" rx="3.5" ry="1.8" fill="#F0A8A0" stroke="var(--outline)" stroke-width="0.8"/>
+        <path d="M37 56q6 3 12 0" stroke="var(--outline)" stroke-width="1" stroke-linecap="round"/>
+        <circle cx="43" cy="30" r="3.5" fill="#E878A8" stroke="var(--outline)" stroke-width="1"/>
+        <path d="M39.5 30q-4-3-3-6t3.5-1l3 3" fill="#E878A8" stroke="var(--outline)" stroke-width="0.8"/>
+        <path d="M46.5 30q4-3 3-6t-3.5-1l-3 3" fill="#E878A8" stroke="var(--outline)" stroke-width="0.8"/>
+        <path d="M69 46q8-14 12-4q4 10-3 14" stroke="#B8A0D0" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M69 46q8-14 12-4q4 10-3 14" stroke="var(--outline)" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- UI OVERLAY -->
+  <div class="ui-overlay" id="uiOverlay">
+    <!-- Arrived title (state 2) -->
+    <div class="arrived-title" id="arrivedTitle">새로운 고양이!</div>
+
+    <!-- Arrived description (state 2) -->
+    <div class="arrived-desc" id="arrivedDesc">봐요, 새로운 고양이에요! 집으로 초대해요.</div>
+
+    <!-- Badge -->
+    <div class="badge" onclick="showPreview()">
+      <div class="badge-box">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <ellipse cx="15" cy="17" rx="10" ry="9" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.4"/>
+          <path d="M7 11l2.5-7h4l2 5.5" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M16 11l2-5.5h4l2.5 7" fill="#C4B8D4" stroke="var(--outline)" stroke-width="1.1" stroke-linejoin="round"/>
+          <circle cx="11.5" cy="16" r="1.5" fill="var(--outline)"/>
+          <circle cx="18.5" cy="16" r="1.5" fill="var(--outline)"/>
+          <ellipse cx="15" cy="18.5" rx="2" ry="1" fill="#F0A8A0"/>
+        </svg>
+        <div class="dot"></div>
+      </div>
+      <div class="badge-pct">5%</div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="bottom-ui">
+      <!-- State 1: timer -->
+      <div class="timer-group" id="timerGroup">
+        <div class="timer-label">새로운 고양이 도착까지 남은 시간</div>
+        <div class="timer-row">
+          <div class="t-block"><div class="digits" id="hh">03</div><div class="unit">시간</div></div>
+          <div class="t-colon">:</div>
+          <div class="t-block"><div class="digits" id="mm">20</div><div class="unit">분</div></div>
+          <div class="t-colon">:</div>
+          <div class="t-block"><div class="digits" id="ss">08</div><div class="unit">초</div></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:45%"></div></div>
+      </div>
+
+      <!-- State 2: buttons -->
+      <div class="action-group" id="actionGroup">
+        <button class="btn btn-adopt" onclick="doAdopt()">
+          입양하기
+          <span class="ad-tag">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><polygon points="6,5.5 6,9.5 10,7.5" fill="currentColor"/></svg>
+            광고
+          </span>
+        </button>
+        <button class="btn btn-release" onclick="doRelease()">그냥 보내기</button>
+      </div>
+    </div>
+
+    <!-- Close -->
+    <div class="x-btn" onclick="goWorld()">
+      <svg viewBox="0 0 14 14" fill="none"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-dim" id="previewDim">
+    <div class="preview-card">
+      <div class="pv-label">신규 고양이</div>
+      <div class="pv-name">러시안 블루</div>
+      <div class="pv-art">
+        <svg viewBox="0 0 120 120" fill="none">
+          <ellipse cx="60" cy="68" rx="36" ry="30" fill="#A8B8C8" stroke="var(--outline)" stroke-width="1.8"/>
+          <path d="M32 48l6-18h8l4 15" fill="#A8B8C8" stroke="var(--outline)" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M70 48l4-15h8l6 18" fill="#A8B8C8" stroke="var(--outline)" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M36 48l4.5-12h5l3 10" fill="#BCC8D8" stroke="none"/>
+          <path d="M72 46l3-10h5l4.5 12" fill="#BCC8D8" stroke="none"/>
+          <circle cx="48" cy="65" r="4" fill="#D0E8D0" stroke="var(--outline)" stroke-width="1.2"/>
+          <circle cx="72" cy="65" r="4" fill="#D0E8D0" stroke="var(--outline)" stroke-width="1.2"/>
+          <circle cx="49" cy="64" r="2" fill="var(--outline)"/>
+          <circle cx="73" cy="64" r="2" fill="var(--outline)"/>
+          <circle cx="50" cy="63" r="0.8" fill="white"/>
+          <circle cx="74" cy="63" r="0.8" fill="white"/>
+          <ellipse cx="60" cy="71" rx="3.5" ry="2" fill="#F0B0B0" stroke="var(--outline)" stroke-width="0.8"/>
+          <path d="M54 76q6 3 12 0" stroke="var(--outline)" stroke-width="1" stroke-linecap="round"/>
+          <line x1="34" y1="68" x2="46" y2="70" stroke="var(--outline-light)" stroke-width="0.7"/>
+          <line x1="34" y1="73" x2="46" y2="73" stroke="var(--outline-light)" stroke-width="0.7"/>
+          <line x1="74" y1="70" x2="86" y2="68" stroke="var(--outline-light)" stroke-width="0.7"/>
+          <line x1="74" y1="73" x2="86" y2="73" stroke="var(--outline-light)" stroke-width="0.7"/>
+          <path d="M94 62q12-16 16-4q4 12-4 16" stroke="#A8B8C8" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M94 62q12-16 16-4q4 12-4 16" stroke="var(--outline)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="48" cy="92" rx="7" ry="4.5" fill="#A8B8C8" stroke="var(--outline)" stroke-width="1.2"/>
+          <ellipse cx="72" cy="92" rx="7" ry="4.5" fill="#A8B8C8" stroke="var(--outline)" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="pv-desc">다음 신규 고양이에요!</div>
+      <div class="pv-pool">풀(Pool) 20마리 중 1마리 · 획득 확률 5%</div>
+      <button class="pv-ok" onclick="closePreview()">확인</button>
+    </div>
+  </div>
+
+  <!-- DEMO SWITCHER -->
+  <div class="switcher">
+    <button class="sw-btn active" id="sw0" onclick="setState(0)">월드</button>
+    <button class="sw-btn" id="sw1" onclick="setState(1)">대기</button>
+    <button class="sw-btn" id="sw2" onclick="setState(2)">도착</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 6 * 3600;
+  let remain = 3 * 3600 + 20 * 60 + 8;
+  let currentState = 0;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    if (currentState !== 1 || remain <= 0) return;
+    remain--;
+    document.getElementById('hh').textContent = pad(Math.floor(remain / 3600));
+    document.getElementById('mm').textContent = pad(Math.floor((remain % 3600) / 60));
+    document.getElementById('ss').textContent = pad(remain % 60);
+    document.getElementById('pFill').style.width = ((TOTAL - remain) / TOTAL * 100) + '%';
+  }
+
+  setInterval(tick, 1000);
+
+  function setState(s) {
+    currentState = s;
+    document.querySelectorAll('.sw-btn').forEach((b, i) => b.classList.toggle('active', i === s));
+
+    const ui = document.getElementById('uiOverlay');
+    const timer = document.getElementById('timerGroup');
+    const action = document.getElementById('actionGroup');
+    const cat = document.getElementById('newCatWorld');
+    const title = document.getElementById('arrivedTitle');
+    const desc = document.getElementById('arrivedDesc');
+
+    if (s === 0) {
+      ui.classList.remove('show');
+      cat.classList.remove('show');
+      title.classList.remove('show');
+      desc.classList.remove('show');
+    } else if (s === 1) {
+      ui.classList.add('show');
+      timer.classList.add('show');
+      action.classList.remove('show');
+      cat.classList.remove('show');
+      title.classList.remove('show');
+      desc.classList.remove('show');
+    } else {
+      ui.classList.add('show');
+      timer.classList.remove('show');
+      action.classList.add('show');
+      cat.classList.add('show');
+      title.classList.add('show');
+      desc.classList.add('show');
+    }
+  }
+
+  function goWorld() { setState(0); }
+
+  function tapStation() {
+    if (currentState === 0) setState(1);
+  }
+
+  function doAdopt() {
+    setState(1);
+    remain = TOTAL;
+  }
+
+  function doRelease() {
+    setState(1);
+    remain = TOTAL;
+  }
+
+  function showPreview() { document.getElementById('previewDim').classList.add('show'); }
+  function closePreview() { document.getElementById('previewDim').classList.remove('show'); }
+</script>
+
+</body>
+</html>

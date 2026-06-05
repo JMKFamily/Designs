@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포레스트 아일랜드 — 급식소 & 행복도 프로토타입</title>
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1f2e;
+    --bg2: #222840;
+    --bg3: #2a3050;
+    --panel: #1e2438;
+    --panel2: #252d45;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8ecf4;
+    --text2: #8b96b5;
+    --text3: #5a6480;
+    --accent: #f9c74f;
+    --accent2: #f3722c;
+    --green: #90be6d;
+    --blue: #4cc9f0;
+    --pink: #f48fb1;
+    --purple: #a78bfa;
+    --red: #f87171;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+  }
+  h1 {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 0.08em;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  /* ── WORLD VIEW ── */
+  .world-wrap {
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+  }
+  .world {
+    background: linear-gradient(170deg, #1b2e1a 0%, #213320 40%, #1a2818 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    position: relative;
+    height: 260px;
+  }
+
+  /* sky & ambient */
+  .world-sky {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,111,165,0.25) 0%, transparent 70%);
+  }
+
+  /* Trees */
+  .tree {
+    position: absolute;
+    bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s;
+    user-select: none;
+  }
+  .tree:hover { transform: scale(1.05); }
+  .tree:active { transform: scale(0.97); }
+  .tree-crown {
+    font-size: 36px;
+    position: relative;
+    line-height: 1;
+  }
+  .tree-trunk {
+    width: 6px; height: 14px;
+    background: #6b4226;
+    border-radius: 2px;
+  }
+  .tree-badge {
+    position: absolute;
+    top: -6px; right: -10px;
+    background: var(--accent);
+    color: #1a1200;
+    font-size: 10px;
+    font-weight: 700;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse-badge 1.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulse-badge {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  /* Cats in world */
+  .world-cat {
+    position: absolute;
+    bottom: 28px;
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .world-cat:hover { transform: scale(1.1); }
+  .cat-emoji { font-size: 28px; line-height: 1; }
+  .cat-name {
+    font-size: 10px; color: var(--text2);
+    margin-top: 2px; font-weight: 500;
+  }
+  .speech-bubble {
+    position: absolute;
+    top: -38px;
+    background: var(--panel2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 4px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--text);
+    pointer-events: none;
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border2);
+    border-bottom: none;
+  }
+
+  /* Feeding station in world */
+  .world-station {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer;
+  }
+  .station-icon {
+    background: var(--panel2);
+    border: 1.5px solid var(--border2);
+    border-radius: 14px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    display: flex; align-items: center; gap: 6px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .station-icon:hover { border-color: var(--accent); background: rgba(249,199,79,0.08); }
+  .station-bowls { display: flex; gap: 4px; }
+  .bowl {
+    font-size: 16px;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+  .bowl.filled { opacity: 1; }
+  .station-label { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+  /* emotion bubble on cat */
+  .emo-float {
+    position: absolute;
+    top: -26px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    pointer-events: none;
+    animation: float-up 2s ease-out forwards;
+  }
+  @keyframes float-up {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-28px); }
+  }
+
+  /* hunger balloon */
+  .hunger-balloon {
+    position: absolute;
+    top: -46px; left: 50%;
+    transform: translateX(-50%);
+    background: #2a1a1a;
+    border: 1px solid var(--red);
+    border-radius: 10px;
+    padding: 4px 8px;
+    font-size: 10px; color: var(--red);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: balloon-pulse 2s ease-in-out infinite;
+  }
+  .hunger-balloon::after {
+    content:''; position:absolute; bottom:-6px; left:50%;
+    transform:translateX(-50%);
+    border:5px solid transparent; border-top-color: var(--red); border-bottom:none;
+  }
+  @keyframes balloon-pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
+
+  /* ── TABS ── */
+  .tabs {
+    width: 100%; max-width: 420px;
+    display: flex; gap: 0;
+    margin: 14px 0 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 0;
+    background: var(--panel);
+    border: none; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text2);
+    transition: background 0.2s, color 0.2s;
+  }
+  .tab-btn.active { background: var(--bg3); color: var(--text); }
+
+  /* ── PANELS ── */
+  .panel-wrap {
+    width: 100%; max-width: 420px;
+    margin-top: 2px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── FEEDING STATION PANEL ── */
+  .station-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .station-header {
+    background: var(--bg3);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .station-title {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-shop {
+    background: var(--accent2);
+    color: white;
+    border: none; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    transition: opacity 0.2s;
+  }
+  .btn-shop:hover { opacity: 0.85; }
+  .btn-call {
+    background: rgba(255,255,255,0.05);
+    color: var(--text3);
+    border: 1px solid var(--border);
+    cursor: default;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 12px; border-radius: var(--radius-sm);
+  }
+  .station-buttons {
+    padding: 12px 16px;
+    display: flex; gap: 8px;
+  }
+
+  /* Slots */
+  .slots-area {
+    padding: 0 16px 12px;
+  }
+  .slots-row {
+    display: flex; gap: 8px; justify-content: center;
+  }
+  .slot {
+    flex: 1;
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 72px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .slot:hover:not(.locked) { border-color: var(--border2); background: var(--panel2); }
+  .slot.locked {
+    opacity: 0.6; cursor: default;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent, transparent 4px,
+      rgba(255,255,255,0.02) 4px, rgba(255,255,255,0.02) 8px
+    );
+  }
+  .slot.full { border-color: var(--accent); }
+  .slot-num {
+    position: absolute; top: 4px; left: 6px;
+    font-size: 9px; color: var(--text3); font-weight: 500;
+  }
+  .slot-lock { font-size: 18px; }
+  .slot-price { font-size: 10px; color: var(--purple); font-weight: 500; }
+  .slot-feed-icon { font-size: 22px; }
+  .slot-count {
+    font-size: 11px; font-weight: 700;
+    color: var(--text);
+    background: var(--bg);
+    padding: 1px 6px; border-radius: 10px;
+  }
+  .slot-empty-label { font-size: 11px; color: var(--text3); }
+  .slot-max-badge {
+    position: absolute; bottom: 4px; right: 4px;
+    font-size: 9px; background: var(--accent);
+    color: #1a1200; padding: 1px 5px; border-radius: 6px;
+    font-weight: 700;
+  }
+
+  /* Feed list */
+  .feed-list-wrap {
+    padding: 0 16px 14px;
+    overflow-x: auto;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .feed-list-wrap::-webkit-scrollbar { display: none; }
+  .feed-list {
+    display: flex; gap: 8px;
+    width: max-content;
+  }
+  .feed-cell {
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    width: 60px; min-height: 66px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    position: relative;
+  }
+  .feed-cell:hover:not(.unavail) { border-color: var(--green); transform: translateY(-2px); }
+  .feed-cell:active:not(.unavail) { transform: scale(0.95); }
+  .feed-cell.unavail { opacity: 0.45; }
+  .feed-icon { font-size: 24px; }
+  .feed-name { font-size: 9px; color: var(--text2); font-weight: 500; text-align: center; }
+  .feed-qty {
+    font-size: 10px; font-weight: 700;
+    color: var(--green);
+    background: rgba(144,190,109,0.12);
+    padding: 1px 5px; border-radius: 8px;
+  }
+  .feed-qty.zero { color: var(--text3); background: transparent; }
+  .feed-type-tag {
+    position: absolute; top: 3px; right: 3px;
+    font-size: 8px;
+    padding: 1px 4px; border-radius: 4px;
+  }
+  .tag-fruit { background: rgba(144,190,109,0.15); color: var(--green); }
+  .tag-feed { background: rgba(167,139,250,0.15); color: var(--purple); }
+
+  /* ── CAT LIST PANEL ── */
+  .cat-list {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 12px 0 0;
+  }
+  .cat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .cat-card:hover { border-color: var(--border2); }
+  .cat-avatar {
+    font-size: 34px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .cat-state-dot {
+    position: absolute; bottom: 0; right: 0;
+    width: 12px; height: 12px;
+    border-radius: 50%; border: 2px solid var(--panel);
+  }
+  .cat-info { flex: 1; min-width: 0; }
+  .cat-card-name {
+    font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 6px;
+  }
+  .cat-emo-icon { font-size: 16px; }
+  .happiness-bar-bg {
+    height: 6px; border-radius: 3px;
+    background: var(--bg);
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .happiness-bar-fill {
+    height: 100%; border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .cat-stats {
+    font-size: 10px; color: var(--text3);
+    display: flex; gap: 8px;
+  }
+  .cat-state-label {
+    font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── FOCUS WINDOW (overlay) ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: flex-end; justify-content: center;
+    padding: 0 0 0;
+  }
+  .overlay.open { display: flex; }
+  .focus-window {
+    background: var(--panel);
+    border-top: 1px solid var(--border2);
+    border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 480px;
+    padding: 0 0 32px;
+    animation: slide-up 0.28s cubic-bezier(0.34,1.3,0.64,1);
+  }
+  @keyframes slide-up {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .focus-drag {
+    width: 40px; height: 4px;
+    background: var(--border2); border-radius: 2px;
+    margin: 10px auto 0;
+  }
+  .focus-cat-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px 10px;
+  }
+  .focus-cat-big { font-size: 48px; position: relative; }
+  .focus-emo-badge {
+    position: absolute; bottom: -2px; right: -4px;
+    font-size: 20px;
+    animation: emo-pop 0.4s cubic-bezier(0.34,1.6,0.64,1);
+  }
+  @keyframes emo-pop {
+    from { transform: scale(0); } to { transform: scale(1); }
+  }
+  .focus-cat-detail { flex: 1; }
+  .focus-cat-name {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .focus-state-tag {
+    font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .focus-happiness-label {
+    font-size: 11px; color: var(--text2); margin-top: 4px;
+  }
+  .focus-bar-bg {
+    height: 8px; border-radius: 4px;
+    background: var(--bg); margin-top: 6px; overflow: hidden;
+  }
+  .focus-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.5s;
+  }
+  .focus-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; color: var(--text2);
+    padding: 4px 8px; align-self: flex-start; margin-top: 14px;
+  }
+
+  .focus-actions {
+    display: flex; gap: 8px;
+    padding: 0 18px 12px;
+    flex-wrap: wrap;
+  }
+  .focus-btn {
+    flex: 1; min-width: 100px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text); font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 10px 12px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .focus-btn:hover { background: var(--panel2); border-color: var(--accent); }
+  .focus-btn:active { transform: scale(0.97); }
+  .focus-btn.disabled { opacity: 0.35; cursor: default; }
+  .focus-btn.disabled:hover { background: var(--bg3); border-color: var(--border2); transform: none; }
+  .focus-divider {
+    height: 1px; background: var(--border);
+    margin: 0 18px 12px;
+  }
+  .focus-ai-note {
+    margin: 0 18px;
+    background: var(--bg3); border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 11px; color: var(--text2); line-height: 1.6;
+  }
+  .focus-ai-note strong { color: var(--text); }
+
+  /* ── SHOP OVERLAY ── */
+  .shop-window {
+    background: var(--panel);
+    border-top: 1px solid var(--border2);
+    border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 480px;
+    padding: 0 0 32px;
+    animation: slide-up 0.28s cubic-bezier(0.34,1.3,0.64,1);
+  }
+  .shop-title {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: var(--accent);
+    padding: 14px 18px 6px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .shop-items {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 8px 18px 0;
+  }
+  .shop-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .shop-item:hover { border-color: var(--accent); }
+  .shop-item:active { transform: scale(0.99); }
+  .shop-item-icon { font-size: 28px; }
+  .shop-item-info { flex: 1; }
+  .shop-item-name { font-size: 14px; font-weight: 500; }
+  .shop-item-desc { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+  .shop-item-price {
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .price-coin { color: var(--accent); }
+  .price-gem { color: var(--blue); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 200;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    width: 100%; max-width: 420px;
+    display: flex; justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px; color: var(--text2);
+  }
+  .currency {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-weight: 500;
+  }
+  .coin-icon { color: var(--accent); }
+  .gem-icon { color: var(--blue); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Forest Island · 급식소 & 행복도 프로토타입</h1>
+
+<!-- 상태바 -->
+<div class="status-bar">
+  <div class="currency"><span class="coin-icon">🪙</span><span id="coins">48</span></div>
+  <div style="font-size:11px;color:var(--text3);align-self:center;">v0.6 prototype</div>
+  <div class="currency"><span class="gem-icon">💎</span><span id="gems">120</span></div>
+</div>
+
+<!-- 월드 뷰 -->
+<div class="world-wrap">
+  <div class="world" id="world">
+    <div class="world-sky"></div>
+
+    <!-- 나무들 -->
+    <div class="tree" style="left:18px" id="tree-apple" onclick="harvestTree('apple')">
+      <div class="tree-crown">🌳<span class="tree-badge" id="badge-apple">2</span></div>
+      <div class="tree-trunk"></div>
+    </div>
+    <div class="tree" style="left:72px" id="tree-banana" onclick="harvestTree('banana')">
+      <div class="tree-crown">🌴<span class="tree-badge" id="badge-banana" style="display:none">0</span></div>
+      <div class="tree-trunk"></div>
+    </div>
+    <div class="tree" style="right:72px" id="tree-melon" onclick="harvestTree('melon')">
+      <div class="tree-crown">🌿<span class="tree-badge" id="badge-melon">1</span></div>
+      <div class="tree-trunk"></div>
+    </div>
+    <div class="tree" style="right:18px" id="tree-extra" onclick="harvestTree('apple')">
+      <div class="tree-crown">🌲<span class="tree-badge" id="badge-extra" style="display:none">0</span></div>
+      <div class="tree-trunk"></div>
+    </div>
+
+    <!-- 급식소 -->
+    <div class="world-station" onclick="openStationPanel()">
+      <div class="station-icon">
+        <div class="station-bowls" id="world-bowls">
+          <div class="bowl filled" id="wb0">🍽️</div>
+          <div class="bowl" id="wb1">🍽️</div>
+          <div class="bowl" id="wb2" style="display:none">🍽️</div>
+        </div>
+        <span style="font-size:11px;color:var(--text2)">급식소</span>
+      </div>
+      <div id="station-balloon" class="station-label" style="display:none;color:var(--red);font-size:10px">😿 먹이가 없어요</div>
+    </div>
+
+    <!-- 고양이들 -->
+    <div class="world-cat" style="left:130px" id="wcat-0" onclick="openCatFocus(0)">
+      <div style="position:relative">
+        <div class="cat-emoji" id="wcat-emoji-0">🐱</div>
+        <div id="wcat-emo-0"></div>
+        <div id="wcat-hunger-0"></div>
+      </div>
+      <div class="cat-name" id="wcat-name-0">모카</div>
+    </div>
+    <div class="world-cat" style="right:120px" id="wcat-1" onclick="openCatFocus(1)">
+      <div style="position:relative">
+        <div class="cat-emoji" id="wcat-emoji-1">🐈</div>
+        <div id="wcat-emo-1"></div>
+        <div id="wcat-hunger-1"></div>
+      </div>
+      <div class="cat-name" id="wcat-name-1">소금</div>
+    </div>
+    <div class="world-cat" style="left:190px;bottom:20px" id="wcat-2" onclick="openCatFocus(2)">
+      <div style="position:relative">
+        <div class="cat-emoji" id="wcat-emoji-2">🐈‍⬛</div>
+        <div id="wcat-emo-2"></div>
+        <div id="wcat-hunger-2"></div>
+      </div>
+      <div class="cat-name" id="wcat-name-2">밤</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 탭 -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('station')">🍽️ 급식소</button>
+  <button class="tab-btn" onclick="switchTab('cats')">🐱 고양이</button>
+</div>
+
+<!-- 패널 영역 -->
+<div class="panel-wrap">
+
+  <!-- 급식소 패널 -->
+  <div class="tab-panel active" id="panel-station">
+    <div class="station-panel">
+      <div class="station-header">
+        <div class="station-title">🍽️ 급식소 관리</div>
+        <button class="btn-shop" onclick="openShop()">🛒 상점</button>
+      </div>
+      <div class="station-buttons">
+        <button class="btn-call" title="v0.7 예정">🐾 길냥이 부르기 <span style="font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;margin-left:2px">곧 업데이트</span></button>
+      </div>
+
+      <!-- 슬롯 -->
+      <div class="slots-area">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">먹이통 슬롯</div>
+        <div class="slots-row" id="slots-row"></div>
+      </div>
+
+      <!-- 재료 리스트 -->
+      <div style="padding:0 16px 6px;font-size:11px;color:var(--text3)">보유 재료</div>
+      <div class="feed-list-wrap">
+        <div class="feed-list" id="feed-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 고양이 패널 -->
+  <div class="tab-panel" id="panel-cats">
+    <div class="cat-list" id="cat-list"></div>
+  </div>
+
+</div>
+
+<!-- CatFocusWindow 오버레이 -->
+<div class="overlay" id="focus-overlay" onclick="closeFocusIfOutside(event)">
+  <div class="focus-window" id="focus-window">
+    <div class="focus-drag"></div>
+    <div class="focus-cat-row">
+      <div class="focus-cat-big">
+        <span id="focus-emoji">🐱</span>
+        <span class="focus-emo-badge" id="focus-emo-badge">😐</span>
+      </div>
+      <div class="focus-cat-detail">
+        <div class="focus-cat-name">
+          <span id="focus-name">모카</span>
+          <span class="focus-state-tag" id="focus-state-tag">보통</span>
+        </div>
+        <div class="focus-happiness-label">행복도 <span id="focus-hp-num" style="font-weight:500;color:var(--text)"></span></div>
+        <div class="focus-bar-bg">
+          <div class="focus-bar-fill" id="focus-bar"></div>
+        </div>
+      </div>
+      <button class="focus-close" onclick="closeFocus()">✕</button>
+    </div>
+
+    <div class="focus-actions">
+      <button class="focus-btn" onclick="doInteract()">👋 상호작용 <span style="font-size:10px;color:var(--green)">+3</span></button>
+      <button class="focus-btn" onclick="doPlay()">🎾 놀아주기 <span style="font-size:10px;color:var(--blue)">+5↑</span></button>
+      <button class="focus-btn" onclick="doFeed()">🍽️ 먹이주기</button>
+    </div>
+    <div class="focus-divider"></div>
+    <div class="focus-ai-note" id="focus-ai-note"></div>
+  </div>
+</div>
+
+<!-- 상점 오버레이 -->
+<div class="overlay" id="shop-overlay" onclick="closeShopIfOutside(event)">
+  <div class="shop-window">
+    <div class="focus-drag"></div>
+    <div class="shop-title">
+      🛒 상점 — 먹이
+      <button style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text2)" onclick="closeShop()">✕</button>
+    </div>
+    <div class="shop-items" id="shop-items"></div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+const FEED_DATA = [
+  { id:'apple',   name:'사과',       icon:'🍎', type:'fruit', qty:6,  tag:'과일' },
+  { id:'banana',  name:'바나나',      icon:'🍌', type:'fruit', qty:2,  tag:'과일' },
+  { id:'melon',   name:'메론',        icon:'🍈', type:'fruit', qty:0,  tag:'과일' },
+  { id:'basic',   name:'기본 사료',   icon:'🥣', type:'feed',  qty:10, tag:'사료' },
+  { id:'premium', name:'고급 사료',   icon:'🥩', type:'feed',  qty:3,  tag:'사료' },
+  { id:'ultra',   name:'프리미엄 사료',icon:'⭐', type:'feed', qty:1,  tag:'사료' },
+];
+
+const SHOP_DATA = [
+  { id:'basic',   name:'기본 사료 x10',  icon:'🥣', price:2,  currency:'coin', desc:'행복도 상승: MAX((75-현재)÷5, 1)  최솟값 1' },
+  { id:'premium', name:'고급 사료 x10',  icon:'🥩', price:2,  currency:'gem',  desc:'행복도 상승: MAX((90-현재)÷3, 5)  최솟값 5' },
+  { id:'ultra',   name:'프리미엄 사료 x10', icon:'⭐', price:5, currency:'gem',  desc:'행복도 +30 고정 상승' },
+];
+
+const CAT_DATA = [
+  { name:'모카', emoji:'🐱', happiness:8  },
+  { name:'소금', emoji:'🐈',  happiness:52 },
+  { name:'밤',   emoji:'🐈‍⬛', happiness:88 },
+];
+
+const SLOT_COUNT = 3;
+let slots = [
+  { locked:false, feedId:null, count:0 },
+  { locked:true,  feedId:null, count:0, price:30 },
+  { locked:true,  feedId:null, count:0, price:60 },
+];
+
+let focusCatIdx = 0;
+let coins = 48, gems = 120;
+
+function getState(h) {
+  if(h<=5)  return { label:'매우 화남', emo:'😠', color:'#f87171', dot:'#f87171' };
+  if(h<=25) return { label:'화남',     emo:'😞', color:'#fb923c', dot:'#fb923c' };
+  if(h<=75) return { label:'보통',     emo:'😐', color:'#facc15', dot:'#facc15' };
+  if(h<=99) return { label:'행복',     emo:'😊', color:'#86efac', dot:'#86efac' };
+  return             { label:'매우 행복',emo:'😄', color:'#60d9fa', dot:'#60d9fa' };
+}
+
+function calcGain(feedId, hp) {
+  if(feedId==='premium') return Math.max(Math.floor((90-hp)/3), 5);
+  if(feedId==='ultra')   return 30;
+  return Math.max(Math.floor((75-hp)/5), 1);
+}
+
+function showToast(msg, dur=2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+function updateCurrency() {
+  document.getElementById('coins').textContent = coins;
+  document.getElementById('gems').textContent = gems;
+}
+
+/* ── 월드 업데이트 ── */
+function updateWorld() {
+  CAT_DATA.forEach((cat,i)=>{
+    const s = getState(cat.happiness);
+    const hunger = document.getElementById('wcat-hunger-'+i);
+    if(cat.happiness<=25) {
+      if(!hunger.innerHTML) hunger.innerHTML = `<div class="hunger-balloon">${cat.name}이 배고파요!</div>`;
+    } else {
+      hunger.innerHTML = '';
+    }
+  });
+  const totalFeed = slots.reduce((a,s)=>a+(s.locked?0:s.count),0);
+  document.getElementById('station-balloon').style.display = totalFeed===0?'block':'none';
+  const wb = [document.getElementById('wb0'),document.getElementById('wb1'),document.getElementById('wb2')];
+  slots.forEach((s,i)=>{
+    if(!wb[i]) return;
+    wb[i].style.display = s.locked ? 'none' : '';
+    wb[i].classList.toggle('filled', s.count>0);
+  });
+}
+
+/* ── 나무 수확 ── */
+const treeBadges = { apple:'badge-apple', banana:'badge-banana', melon:'badge-melon', extra:'badge-extra' };
+function harvestTree(type) {
+  const badgeMap = { apple:'badge-apple', banana:'badge-banana', melon:'badge-melon' };
+  const bid = badgeMap[type];
+  const badge = document.getElementById(bid);
+  const count = parseInt(badge?.textContent||'0');
+  if(!badge || badge.style.display==='none' || count===0) {
+    showToast('🌱 아직 열매가 열리지 않았어요');
+    return;
+  }
+  const feed = FEED_DATA.find(f=>f.id===type);
+  const gain = 3;
+  feed.qty += gain;
+  badge.textContent = (count-1).toString();
+  if(count-1===0) badge.style.display='none';
+  showToast(`🎉 ${feed.icon} ${feed.name} ${gain}개 획득!`);
+  renderFeedList();
+}
+
+/* ── 탭 전환 ── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['station','cats'][i]===tab));
+  document.getElementById('panel-station').classList.toggle('active',tab==='station');
+  document.getElementById('panel-cats').classList.toggle('active',tab==='cats');
+}
+
+/* ── 슬롯 렌더 ── */
+function renderSlots() {
+  const row = document.getElementById('slots-row');
+  row.innerHTML = '';
+  slots.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.className = 'slot' + (s.locked?' locked':'') + (s.count>=100?' full':'');
+    div.innerHTML = `<span class="slot-num">${i+1}</span>`;
+    if(s.locked) {
+      div.innerHTML += `<span class="slot-lock">🔒</span><span class="slot-price">💎${s.price}</span>`;
+      div.onclick = ()=>buySlot(i);
+    } else if(s.feedId) {
+      const f = FEED_DATA.find(f=>f.id===s.feedId);
+      div.innerHTML += `<span class="slot-feed-icon">${f.icon}</span><span class="slot-count">${s.count}개</span>`;
+      if(s.count>=100) div.innerHTML += `<span class="slot-max-badge">MAX</span>`;
+      div.onclick = ()=>removeSlot(i);
+    } else {
+      div.innerHTML += `<span style="font-size:18px;opacity:0.2">＋</span><span class="slot-empty-label">비어있음</span>`;
+    }
+    row.appendChild(div);
+  });
+}
+
+function buySlot(idx) {
+  if(!slots[idx].locked) return;
+  const price = slots[idx].price;
+  if(idx===2 && slots[1].locked) { showToast('💡 2번 슬롯을 먼저 구매해주세요'); return; }
+  if(gems < price) { showToast('💎 보석이 부족해요'); return; }
+  gems -= price;
+  slots[idx].locked = false;
+  updateCurrency(); renderSlots(); updateWorld();
+  showToast(`✅ ${idx+1}번 슬롯 해금 완료!`);
+}
+
+function removeSlot(idx) {
+  const s = slots[idx];
+  if(!s.feedId) return;
+  const f = FEED_DATA.find(f=>f.id===s.feedId);
+  const ret = s.count;
+  if(confirm(`먹이통에서 먹이를 뺄까요?\n이미 먹은 먹이는 사라져요!\n\n${f.name} ${ret}개를 회수합니다.`)) {
+    f.qty += ret;
+    s.feedId = null; s.count = 0;
+    renderSlots(); renderFeedList(); updateWorld();
+    showToast(`📦 ${f.name} ${ret}개 회수 완료`);
+  }
+}
+
+/* ── 먹이 리스트 렌더 ── */
+function renderFeedList() {
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+  FEED_DATA.forEach(f=>{
+    const div = document.createElement('div');
+    const unavail = f.qty===0;
+    div.className = 'feed-cell' + (unavail?' unavail':'');
+    const tagCls = f.type==='fruit'?'tag-fruit':'tag-feed';
+    div.innerHTML = `
+      <span class="feed-type-tag ${tagCls}">${f.tag}</span>
+      <span class="feed-icon">${f.icon}</span>
+      <span class="feed-name">${f.name}</span>
+      <span class="feed-qty${f.qty===0?' zero':''}">${f.qty}개</span>
+    `;
+    div.onclick = ()=>registerFeed(f.id);
+    list.appendChild(div);
+  });
+}
+
+function registerFeed(feedId) {
+  const feed = FEED_DATA.find(f=>f.id===feedId);
+  if(feed.qty===0) {
+    if(feed.type==='feed') openShop();
+    else showToast(`🌱 ${feed.name}를 수확하러 나무를 터치해주세요!`);
+    return;
+  }
+  const allFull = slots.filter(s=>!s.locked).every(s=>s.count>=100);
+  if(allFull) { showToast('🍽️ 먹이통이 가득 찼어요!'); return; }
+
+  let target = slots.findIndex(s=>!s.locked && s.feedId===feedId && s.count<100);
+  if(target===-1) target = slots.findIndex(s=>!s.locked && !s.feedId);
+  if(target===-1) target = slots.findIndex(s=>!s.locked && s.count<100);
+  if(target===-1) { showToast('🍽️ 먹이통이 가득 찼어요!'); return; }
+
+  const space = 100 - slots[target].count;
+  const add = Math.min(feed.qty, space);
+  feed.qty -= add;
+  slots[target].feedId = feedId;
+  slots[target].count += add;
+  renderSlots(); renderFeedList(); updateWorld();
+  showToast(`✅ ${feed.icon} ${feed.name} ${add}개 등록!`);
+}
+
+/* ── 상점 ── */
+function openShop() {
+  const list = document.getElementById('shop-items');
+  list.innerHTML = '';
+  SHOP_DATA.forEach(item=>{
+    const f = FEED_DATA.find(f=>f.id===item.id);
+    const div = document.createElement('div');
+    div.className = 'shop-item';
+    const isCoin = item.currency==='coin';
+    const canBuy = isCoin ? coins>=item.price : gems>=item.price;
+    div.innerHTML = `
+      <span class="shop-item-icon">${item.icon}</span>
+      <div class="shop-item-info">
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-desc">${item.desc}</div>
+      </div>
+      <div class="shop-item-price ${isCoin?'price-coin':'price-gem'}">
+        ${isCoin?'🪙':'💎'}${item.price}
+      </div>
+    `;
+    div.onclick = ()=>buyFeed(item, isCoin);
+    if(!canBuy) div.style.opacity='0.5';
+    list.appendChild(div);
+  });
+  document.getElementById('shop-overlay').classList.add('open');
+}
+function closeShop() { document.getElementById('shop-overlay').classList.remove('open'); }
+function closeShopIfOutside(e) { if(e.target===document.getElementById('shop-overlay')) closeShop(); }
+function openStationPanel() { switchTab('station'); }
+
+function buyFeed(item, isCoin) {
+  const enough = isCoin ? coins>=item.price : gems>=item.price;
+  if(!enough) { showToast(isCoin?'🪙 코인이 부족해요':'💎 보석이 부족해요'); return; }
+  if(isCoin) coins-=item.price; else gems-=item.price;
+  const f = FEED_DATA.find(f=>f.id===item.id);
+  f.qty += 10;
+  updateCurrency(); renderFeedList(); closeShop();
+  showToast(`🎉 ${f.icon} ${f.name} 10개 구매 완료!`);
+}
+
+/* ── 고양이 리스트 ── */
+function renderCatList() {
+  const list = document.getElementById('cat-list');
+  list.innerHTML = '';
+  CAT_DATA.forEach((cat,i)=>{
+    const s = getState(cat.happiness);
+    const pct = Math.min(cat.happiness,100);
+    const div = document.createElement('div');
+    div.className = 'cat-card';
+    div.innerHTML = `
+      <div class="cat-avatar">
+        ${cat.emoji}
+        <div class="cat-state-dot" style="background:${s.dot}"></div>
+      </div>
+      <div class="cat-info">
+        <div class="cat-card-name">
+          ${cat.name} <span class="cat-emo-icon">${s.emo}</span>
+        </div>
+        <div class="happiness-bar-bg">
+          <div class="happiness-bar-fill" style="width:${pct}%;background:${s.color}"></div>
+        </div>
+        <div class="cat-stats">
+          <span>행복도 구간: ${s.label}</span>
+          <span style="color:var(--text3)">·</span>
+          <span>인덱스 ${i}</span>
+        </div>
+      </div>
+      <div class="cat-state-label" style="background:${s.color}20;color:${s.color}">${s.label}</div>
+    `;
+    div.onclick = ()=>openCatFocus(i);
+    list.appendChild(div);
+  });
+}
+
+/* ── CatFocusWindow ── */
+function openCatFocus(idx) {
+  focusCatIdx = idx;
+  updateFocusWindow();
+  document.getElementById('focus-overlay').classList.add('open');
+}
+function closeFocus() { document.getElementById('focus-overlay').classList.remove('open'); }
+function closeFocusIfOutside(e) { if(e.target===document.getElementById('focus-overlay')) closeFocus(); }
+
+function updateFocusWindow() {
+  const cat = CAT_DATA[focusCatIdx];
+  const s = getState(cat.happiness);
+  document.getElementById('focus-emoji').textContent = cat.emoji;
+  document.getElementById('focus-emo-badge').textContent = s.emo;
+  document.getElementById('focus-name').textContent = cat.name;
+  document.getElementById('focus-hp-num').textContent = cat.happiness;
+  const tag = document.getElementById('focus-state-tag');
+  tag.textContent = s.label;
+  tag.style.background = s.color+'25';
+  tag.style.color = s.color;
+  const pct = Math.min(cat.happiness,100);
+  document.getElementById('focus-bar').style.width = pct+'%';
+  document.getElementById('focus-bar').style.background = s.color;
+  const note = document.getElementById('focus-ai-note');
+  if(cat.happiness<=25) {
+    note.innerHTML = `<strong>🔴 불행 상태</strong>: ${cat.name}이 배고파요!<br>급식소 접근을 우선합니다 (인덱스 오름차순). 급식소가 가득 차면 일반 AI로 전환.`;
+  } else if(cat.happiness<=75) {
+    note.innerHTML = `<strong>🟡 보통 상태</strong>: 상호작용 시 행복도 +3 적용.<br>일반 타일오브젝트를 무작위로 이용합니다.`;
+  } else {
+    note.innerHTML = `<strong>🟢 행복 상태</strong>: 골골골~ 🎵<br>일반 타일오브젝트를 무작위로 이용합니다.`;
+  }
+}
+
+function addHappinessFloat(idx, delta) {
+  const emoEl = document.getElementById('wcat-emo-'+idx);
+  const span = document.createElement('div');
+  span.className = 'emo-float';
+  span.textContent = delta>0 ? '+'+delta+'💛' : delta+'💔';
+  span.style.color = delta>0 ? 'var(--green)' : 'var(--red)';
+  emoEl.appendChild(span);
+  setTimeout(()=>span.remove(), 2000);
+}
+
+function doInteract() {
+  const cat = CAT_DATA[focusCatIdx];
+  const s = getState(cat.happiness);
+  if(s.label==='행복'||s.label==='매우 행복') {
+    showToast(`😸 ${cat.name}은 이미 충분히 행복해요! (+3 미적용)`);
+    return;
+  }
+  cat.happiness = Math.min(cat.happiness+3, 999);
+  addHappinessFloat(focusCatIdx, 3);
+  updateFocusWindow(); renderCatList(); updateWorld();
+  showToast(`👋 ${cat.name}과 상호작용! 행복도 +3`);
+}
+
+function doPlay() {
+  CAT_DATA.forEach((cat,i)=>{
+    cat.happiness = Math.min(cat.happiness+5, 999);
+    addHappinessFloat(i, 5);
+  });
+  updateFocusWindow(); renderCatList(); updateWorld();
+  showToast(`🎾 놀아주기! 모든 고양이 행복도 +5`);
+}
+
+function doFeed() {
+  const cat = CAT_DATA[focusCatIdx];
+  const activeSlot = slots.find(s=>!s.locked && s.count>0);
+  if(!activeSlot) {
+    showToast('🍽️ 급식소에 먹이가 없어요! 먹이를 등록해주세요');
+    return;
+  }
+  const gain = calcGain(activeSlot.feedId, cat.happiness);
+  cat.happiness = Math.min(cat.happiness+gain, 999);
+  activeSlot.count--;
+  if(activeSlot.count===0) activeSlot.feedId=null;
+  addHappinessFloat(focusCatIdx, gain);
+  updateFocusWindow(); renderCatList(); renderSlots(); updateWorld();
+  const f = FEED_DATA.find(f=>f.id===activeSlot.feedId) || FEED_DATA[3];
+  showToast(`🍽️ ${cat.name}이 먹이를 먹었어요! 행복도 +${gain}`);
+}
+
+/* ── 시뮬레이션: 시간경과 소모 ── */
+setInterval(()=>{
+  CAT_DATA.forEach((cat,i)=>{
+    if(cat.happiness>30) {
+      cat.happiness = Math.max(cat.happiness-1, 30);
+      if(cat.happiness===30) addHappinessFloat(i,-1);
+    }
+  });
+  renderCatList(); updateWorld();
+  if(document.getElementById('focus-overlay').classList.contains('open')) updateFocusWindow();
+}, 8000);
+
+/* ── 나무 타이머 (데모: 15초마다 사과 1개 생성) ── */
+setInterval(()=>{
+  const badge = document.getElementById('badge-apple');
+  const cur = parseInt(badge.textContent||'0');
+  if(cur<3) {
+    badge.textContent = (cur+1).toString();
+    badge.style.display='';
+    showToast('🌳 사과나무에 열매가 맺혔어요!');
+  }
+}, 15000);
+
+/* ── 초기 렌더 ── */
+renderSlots();
+renderFeedList();
+renderCatList();
+updateWorld();
+</script>
+</body>
+</html>

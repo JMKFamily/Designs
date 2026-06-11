@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고양이 주민 관리</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center;padding:20px}
+.wrap{width:380px;padding:12px;position:relative}
+.gem-bar{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-bottom:10px}
+.gem-bar span{font-size:13px;font-weight:500;color:#2C2C2A}
+.gem-bar small{font-size:11px;color:#888780}
+.card{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:12px;margin-bottom:12px}
+.card-row{display:flex;gap:10px}
+.portrait{width:80px;height:80px;border-radius:8px;background:#f5f4f0;border:0.5px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;position:relative}
+.costume-tag{position:absolute;bottom:-4px;right:-4px;font-size:15px}
+.nav-btns{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.icon-btn{width:28px;height:28px;border:0.5px solid rgba(0,0,0,0.2);border-radius:6px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.icon-btn:hover{background:#f5f4f0}
+.info{flex:1;min-width:0}
+.name-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.cat-name{font-size:15px;font-weight:500;color:#2C2C2A;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.happy-row{display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.happy-row span{font-size:14px;font-weight:500;color:#2C2C2A}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.stat-box{background:#f5f4f0;border-radius:8px;padding:6px 8px}
+.stat-box .lbl{font-size:10px;color:#888780;margin-bottom:2px}
+.stat-box .val{font-size:13px;font-weight:500;color:#2C2C2A}
+.action-row{display:flex;gap:6px}
+.abtn{flex:1;padding:7px 4px;font-size:11px;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;background:none;cursor:pointer;color:#5F5E5A;display:flex;align-items:center;justify-content:center;gap:3px;text-align:center}
+.abtn:hover{background:#f5f4f0}
+.abtn.red{border-color:#E24B4A;color:#A32D2D}
+.abtn.red:hover{background:#FCEBEB}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px}
+.badge.ok{background:#EAF3DE;color:#3B6D11}
+.list-wrap{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:10px}
+.list-lbl{font-size:11px;color:#888780;margin-bottom:8px}
+.cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.cell{aspect-ratio:1;border:0.5px solid rgba(0,0,0,0.1);border-radius:8px;background:#f5f4f0;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;position:relative;transition:border-color 0.15s}
+.cell:hover{border-color:rgba(0,0,0,0.3)}
+.cell.active{border:2px solid #378ADD}
+.cell .badge-dot{position:absolute;top:2px;right:2px;font-size:10px;line-height:1}
+.cell .cos{position:absolute;bottom:2px;right:2px;font-size:9px;line-height:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2C2C2A;color:#F1EFE8;padding:8px 18px;border-radius:20px;font-size:13px;white-space:nowrap;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:100}
+.toast.on{opacity:1}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:50}
+.overlay.on{display:flex}
+.modal{background:#fff;border-radius:12px;padding:20px;width:260px;border:0.5px solid rgba(0,0,0,0.12)}
+.modal h3{font-size:15px;font-weight:500;margin-bottom:12px;color:#2C2C2A}
+.modal input{width:100%;padding:8px 10px;border:0.5px solid rgba(0,0,0,0.2);border-radius:8px;font-size:14px;background:#fff;color:#2C2C2A;margin-bottom:12px;outline:none}
+.modal input:focus{border-color:#378ADD}
+.modal-row{display:flex;gap:8px}
+.modal-row button{flex:1;padding:8px;border-radius:8px;font-size:13px;cursor:pointer;border:0.5px solid rgba(0,0,0,0.15);background:none;color:#2C2C2A}
+.modal-row button:hover{background:#f5f4f0}
+.modal-row button.pri{background:#378ADD;color:#fff;border-color:#378ADD}
+.modal-row button.pri:hover{background:#185FA5}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="gem-bar">
+    <span>💎</span>
+    <span id="gems">120</span>
+    <small>보석</small>
+  </div>
+  <div class="card" id="main-card"></div>
+  <div class="list-wrap">
+    <div class="list-lbl">수집된 주민</div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>이름 변경</h3>
+    <input id="name-input" type="text" maxlength="12" placeholder="새 이름 입력">
+    <div class="modal-row">
+      <button onclick="closeModal()">취소</button>
+      <button class="pri" onclick="saveName()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var gems = 120;
+var sel = 0;
+var editIdx = -1;
+
+var EMOJIS   = ['🐱','😺','😸','😹','😻','🙀','😿','🐈','🐈','🦁'];
+var COSTUMES = [null,'👒','🎩','🎀',null,'👑','🕶️',null,'🌸',null];
+var NAMES    = ['하루','나비','루나','코코','모모','별이','구름','솔이','복숭아','미미'];
+var AGES     = [1, 3, 0, 7, 12, 2, 5, 9, 14, 6];
+
+var cats = [];
+for (var i = 0; i < 10; i++) {
+  cats.push({
+    id: i + 1,
+    name: NAMES[i],
+    emoji: EMOJIS[i],
+    costume: COSTUMES[i],
+    happy: Math.floor(Math.random() * 60) + 40,
+    sick: Math.random() < 0.3,
+    bored: Math.random() < 0.35,
+    age: AGES[i],
+    isNew: i === 4
+  });
+}
+
+function ageLabel(a) {
+  if (a === 0) return '1살 미만';
+  return a + '살';
+}
+
+function happyFace(p) {
+  if (p >= 80) return '😄';
+  if (p >= 50) return '🙂';
+  if (p >= 30) return '😐';
+  return '😟';
+}
+
+function alertOf(cat) {
+  if (cat.isNew) return '🔴';
+  if (cat.sick) return '🤒';
+  if (cat.bored) return '🥱';
+  return '';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(function() { t.classList.remove('on'); }, 2000);
+}
+
+function renderCard() {
+  var cat = cats[sel];
+  var hp = Math.min(100, cat.happy);
+
+  var healthHTML = cat.sick
+    ? '<button class="abtn red" onclick="heal()">💉 치료하기 (💎10)</button>'
+    : '<div class="abtn" style="cursor:default"><span class="badge ok">💚 건강해요</span></div>';
+
+  var playHTML = cat.bored
+    ? '<button class="abtn" onclick="showToast(\'놀아주기로 이동했습니다\')">🎾 놀아주기</button>'
+    : '<div class="abtn" style="cursor:default"><span class="badge ok">😊 충분히 놀았어요</span></div>';
+
+  document.getElementById('main-card').innerHTML =
+    '<div class="card-row">' +
+      '<div>' +
+        '<div class="portrait">' +
+          cat.emoji +
+          (cat.costume ? '<span class="costume-tag">' + cat.costume + '</span>' : '') +
+        '</div>' +
+        '<div class="nav-btns">' +
+          '<button class="icon-btn" onclick="showToast(\'도감으로 이동했습니다\')" title="이야기">📖</button>' +
+          '<button class="icon-btn" onclick="showToast(\'코스튬으로 이동했습니다\')" title="코스튬">👕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="info">' +
+        '<div class="name-row">' +
+          '<span class="cat-name">' + cat.name + '</span>' +
+          '<button class="icon-btn" onclick="openModal(' + sel + ')" title="이름변경">✏️</button>' +
+        '</div>' +
+        '<div class="happy-row">' +
+          '<span>' + happyFace(hp) + '</span>' +
+          '<span>' + hp + '%</span>' +
+        '</div>' +
+        '<div class="stats2">' +
+          '<div class="stat-box"><div class="lbl">고양이 번호</div><div class="val">#' + cat.id + '</div></div>' +
+          '<div class="stat-box"><div class="lbl">나이</div><div class="val">' + ageLabel(cat.age) + '</div></div>' +
+        '</div>' +
+        '<div class="action-row">' + healthHTML + playHTML + '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderGrid() {
+  var html = '';
+  for (var i = 0; i < cats.length; i++) {
+    var cat = cats[i];
+    var al = alertOf(cat);
+    html +=
+      '<div class="cell' + (i === sel ? ' active' : '') + '" onclick="selectCat(' + i + ')" title="' + cat.name + '">' +
+        cat.emoji +
+        (cat.costume ? '<span class="cos">' + cat.costume + '</span>' : '') +
+        (al ? '<span class="badge-dot">' + al + '</span>' : '') +
+      '</div>';
+  }
+  document.getElementById('cat-grid').innerHTML = html;
+}
+
+function selectCat(i) {
+  cats[i].isNew = false;
+  sel = i;
+  renderCard();
+  renderGrid();
+}
+
+function heal() {
+  if (gems < 10) { showToast('보석이 부족합니다'); return; }
+  gems -= 10;
+  cats[sel].sick = false;
+  document.getElementById('gems').textContent = gems;
+  showToast('치료 완료! 보석 10개 사용');
+  renderCard();
+  renderGrid();
+}
+
+function openModal(i) {
+  editIdx = i;
+  document.getElementById('name-input').value = cats[i].name;
+  document.getElementById('overlay').classList.add('on');
+  setTimeout(function() { document.getElementById('name-input').focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('on');
+}
+
+function saveName() {
+  var v = document.getElementById('name-input').value.trim();
+  if (!v) return;
+  cats[editIdx].name = v;
+  closeModal();
+  renderCard();
+  renderGrid();
+}
+
+document.getElementById('name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveName();
+  if (e.key === 'Escape') closeModal();
+});
+
+renderCard();
+renderGrid();
+</script>
+</body>
+</html>

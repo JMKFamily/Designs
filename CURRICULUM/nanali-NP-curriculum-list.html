@@ -482,7 +482,11 @@ function toggle(header) {
 <script>
 document.getElementById('back-btn').addEventListener('click', function(e) {
   e.preventDefault();
-  location.href = 'nanali-NP-curriculum-IR.html#9';
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
+  location.href = isMobile
+    ? 'nanali-NP-curriculum-mobile.html'
+    : 'nanali-NP-curriculum-IR.html#9';
 });
 </script>
 

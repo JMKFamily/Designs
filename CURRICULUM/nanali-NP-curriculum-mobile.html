@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나날이 스튜디오 / 커리큘럼 소개</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:     #DF4A31;
+  --red-dim: rgba(223,74,49,0.15);
+  --ink:     #141518;
+  --ink2:    #1E1F23;
+  --off:     #F6F3EC;
+  --muted:   #A8A498;
+  --subtle:  #6B6759;
+  --border:  rgba(246,243,236,0.10);
+  --mono:    'JetBrains Mono', monospace;
+}
+
+html { background: var(--ink); color: var(--off); font-family: -apple-system, 'Apple SD Gothic Neo', 'Pretendard', sans-serif; font-size: 16px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+body { max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+
+/* ── Header ── */
+.header {
+  padding: 48px 24px 40px;
+  border-bottom: 1px solid var(--border);
+}
+.header-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--subtle);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.header-kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.header-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--off);
+  margin-bottom: 16px;
+}
+.header-title em {
+  font-style: normal;
+  color: var(--red);
+}
+.header-sub {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── Section ── */
+.section {
+  padding: 36px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--subtle);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-heading {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--off);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.section-body {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.section-body strong { color: var(--off); font-weight: 600; }
+
+/* ── Pipeline ── */
+.pipeline { display: flex; flex-direction: column; gap: 2px; margin-top: 24px; }
+.pipe-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+  background: var(--ink2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+.pipe-item:hover { border-color: rgba(223,74,49,0.3); }
+.pipe-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 500;
+  padding-top: 2px;
+}
+.pipe-content {}
+.pipe-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--off);
+  margin-bottom: 4px;
+}
+.pipe-desc {
+  font-size: 13px;
+  color: var(--subtle);
+  line-height: 1.55;
+}
+.pipe-arrow {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 6px;
+  font-family: var(--mono);
+}
+
+/* ── Principles ── */
+.principles { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.principle {
+  padding: 20px;
+  background: var(--ink2);
+  border-radius: 10px;
+  border-left: 2px solid var(--red);
+}
+.principle-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.principle-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--off);
+  margin-bottom: 6px;
+}
+.principle-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── Outcomes ── */
+.outcomes { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.outcome {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  padding: 18px 16px;
+  background: var(--ink2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.outcome-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--red-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.outcome-title { font-size: 15px; font-weight: 600; color: var(--off); margin-bottom: 4px; }
+.outcome-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── Why ── */
+.why-cards { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.why-card {
+  padding: 20px;
+  background: var(--ink2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.why-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.why-title { font-size: 15px; font-weight: 700; color: var(--off); margin-bottom: 6px; }
+.why-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── CTA ── */
+.cta {
+  padding: 40px 24px;
+  text-align: center;
+}
+.cta-heading {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--off);
+  margin-bottom: 8px;
+}
+.cta-sub {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  line-height: 1.65;
+}
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: var(--red);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: background 0.15s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.cta-btn:active { background: #B8371F; transform: scale(0.97); }
+.cta-contact {
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--subtle);
+}
+.cta-contact a { color: var(--muted); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-eyebrow">NANALI STUDIO · 신작제작팀 · 2026</div>
+  <div class="header-kicker">Game Making Curriculum</div>
+  <h1 class="header-title">성공하는 게임<br>만들기 — <em>5 STAGES</em></h1>
+  <p class="header-sub">6주 안에, 게임 하나를 직접 시장에 내보낸다.<br>나날이스튜디오 신작제작팀이 일하는 방식 그대로.</p>
+</div>
+
+<!-- The Promise -->
+<div class="section">
+  <div class="section-label">02 · The Promise</div>
+  <h2 class="section-heading">이론이 아니라 —<br>내 손으로 출시까지.</h2>
+  <p class="section-body">핵심 플레이를 만들고, 시장에 묻고, 다음 수를 두는 팀.<br><br>신작제작팀이 <strong>실제로 일하는 방식</strong>을 그대로 배웁니다.</p>
+</div>
+
+<!-- Pipeline -->
+<div class="section">
+  <div class="section-label">03 · How We Make Games</div>
+  <h2 class="section-heading">게임 하나를<br>5단계로 만듭니다.</h2>
+  <p class="section-body">6주마다 게임 하나를 시장에 내보내고, 회고 후 다음 수를 결정합니다.</p>
+  <div class="pipeline">
+    <div class="pipe-item">
+      <div class="pipe-num">01</div>
+      <div class="pipe-content">
+        <div class="pipe-title">시장 읽기</div>
+        <div class="pipe-desc">데이터로 트렌드를 읽고 벤치마크를 정한다.</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">02</div>
+      <div class="pipe-content">
+        <div class="pipe-title">제안 & 검증</div>
+        <div class="pipe-desc">한 장 제안서 + 플레이어블 소재로 먼저 검증.</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">03</div>
+      <div class="pipe-content">
+        <div class="pipe-title">6주 제작</div>
+        <div class="pipe-desc">기획·개발·아트를 직접 만들어 출시한다.</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">04</div>
+      <div class="pipe-content">
+        <div class="pipe-title">지표 확인</div>
+        <div class="pipe-desc">실제 유저 지표로 성과를 측정한다.</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">05</div>
+      <div class="pipe-content">
+        <div class="pipe-title">다음 수 결정</div>
+        <div class="pipe-desc">강화할지, 접고 회고할지 — 지표가 정한다.</div>
+        <div class="pipe-arrow">↩ 다시 처음으로</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Principles -->
+<div class="section">
+  <div class="section-label">04 · The Rhythm</div>
+  <h2 class="section-heading">세 가지 원리로,<br>6주 안에 완성.</h2>
+  <div class="principles">
+    <div class="principle">
+      <div class="principle-num">CYCLE · 6 WEEKS</div>
+      <div class="principle-title">빠르게 만든다</div>
+      <div class="principle-desc">완벽을 기다리지 않습니다. 30일 안에 가장 작은 완성품을 만들어 세상에 내놓습니다.</div>
+    </div>
+    <div class="principle">
+      <div class="principle-num">VALIDATE · METRICS</div>
+      <div class="principle-title">시장에서 확인한다</div>
+      <div class="principle-desc">내 생각이 아니라 실제 유저의 반응으로 검증합니다. 좋은 신호와 나쁜 신호를 지표로 읽습니다.</div>
+    </div>
+    <div class="principle">
+      <div class="principle-num">DECIDE · LEARN</div>
+      <div class="principle-title">냉정하게 본다</div>
+      <div class="principle-desc">애착이 아니라 데이터로 판단합니다. 안 되면 접고 회고하며, 그 배움은 다음 게임으로 쌓입니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Curriculum -->
+<div class="section">
+  <div class="section-label">05–06 · The Curriculum</div>
+  <h2 class="section-heading">파이프라인 →<br>5단계 커리큘럼</h2>
+  <p class="section-body">나날이스튜디오가 게임을 만드는 방식을, 손에 잡히게 압축했습니다.<br><br>첫 주부터 직접 만들고, 마지막엔 <strong>당신의 게임을 출시</strong>합니다.</p>
+  <div class="pipeline" style="margin-top:24px;">
+    <div class="pipe-item">
+      <div class="pipe-num">01</div>
+      <div class="pipe-content">
+        <div class="pipe-title">시장 읽기</div>
+        <div class="pipe-desc">데이터로 트렌드와 장르를 관측하고, 벤치마크를 고르는 눈.</div>
+        <div class="pipe-arrow">↳ 무엇을 만들지 정한다</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">02</div>
+      <div class="pipe-content">
+        <div class="pipe-title">한 장으로 제안하기</div>
+        <div class="pipe-desc">원페이퍼 제안서와 30초 플레이어블 소재로 컨셉을 검증하는 법.</div>
+        <div class="pipe-arrow">↳ 만들기 전에 확인한다</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">03</div>
+      <div class="pipe-content">
+        <div class="pipe-title">6주 안에 출시하기</div>
+        <div class="pipe-desc">1인 다역으로 MVP를 만드는 스프린트 — 엔진·AI 도구를 직접 다룬다.</div>
+        <div class="pipe-arrow">↳ 직접 게임을 만든다</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">04</div>
+      <div class="pipe-content">
+        <div class="pipe-title">지표로 판단하기</div>
+        <div class="pipe-desc">성적을 두 갈래로 읽고, 회고로 진짜 원인을 찾아내는 법.</div>
+        <div class="pipe-arrow">↳ 결과를 해석한다</div>
+      </div>
+    </div>
+    <div class="pipe-item">
+      <div class="pipe-num">05</div>
+      <div class="pipe-content">
+        <div class="pipe-title">반복으로 성장하기</div>
+        <div class="pipe-desc">배운 것을 다음 시도로 쌓아 — 점점 더 잘 만드는 제작자가 된다.</div>
+        <div class="pipe-arrow">↳ 다음 게임으로</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px; text-align:center;">
+    <a href="nanali-NP-curriculum-list.html" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:rgba(223,74,49,0.12);border:1px solid rgba(223,74,49,0.3);color:#DF4A31;font-size:13px;font-weight:600;border-radius:100px;text-decoration:none;letter-spacing:0.02em;">강의 목록 자세히 보기 →</a>
+  </div>
+</div>
+
+<!-- Outcomes -->
+<div class="section">
+  <div class="section-label">07 · Who You Become</div>
+  <h2 class="section-heading">수료 후,<br>당신은 이걸 할 수 있습니다.</h2>
+  <div class="outcomes">
+    <div class="outcome">
+      <div class="outcome-icon">📋</div>
+      <div>
+        <div class="outcome-title">제안한다</div>
+        <div class="outcome-desc">시장을 읽고 한 장으로 설득하며, 소재로 가능성을 먼저 검증한다.</div>
+      </div>
+    </div>
+    <div class="outcome">
+      <div class="outcome-icon">🎮</div>
+      <div>
+        <div class="outcome-title">만든다</div>
+        <div class="outcome-desc">기획·개발·아트를 넘나들며 한 사이클의 게임을 완성해 출시한다.</div>
+      </div>
+    </div>
+    <div class="outcome">
+      <div class="outcome-icon">📊</div>
+      <div>
+        <div class="outcome-title">판단한다</div>
+        <div class="outcome-desc">지표를 냉정하게 읽고, 강화할지 접을지 스스로 결정한다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Why -->
+<div class="section">
+  <div class="section-label">08 · Why This Program</div>
+  <h2 class="section-heading">이 강의가<br>특별한 이유.</h2>
+  <div class="why-cards">
+    <div class="why-card">
+      <div class="why-tag">LIVE · NOT MOCKUP</div>
+      <div class="why-title">진짜 출시</div>
+      <div class="why-desc">포트폴리오용 목업이 아닙니다. 실제 스토어에 올라가, 진짜 유저가 플레이하는 라이브 게임을 만듭니다.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-tag">REAL METRICS</div>
+      <div class="why-title">시장이 답한다</div>
+      <div class="why-desc">강사의 점수가 아니라 시장의 지표가 답을 줍니다. 내 게임이 통하는지, 데이터로 직접 확인할 기회.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-tag">EVERYTHING COMPOUNDS</div>
+      <div class="why-title">전부 쌓인다</div>
+      <div class="why-desc">성패와 무관하게 모든 시도가 자산이 됩니다. 회고와 지표가 다음 게임을 더 좋게 만드는 밑천이 됩니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <h2 class="cta-heading">함께 만들래요?</h2>
+  <p class="cta-sub">나날이스튜디오는 여러분의 성장을 응원합니다.<br>만드는 사람으로 시작할 준비가 됐다면 — 지금.</p>
+  <a href="nanali-NP-curriculum-list.html" class="cta-btn">커리큘럼 자세히 보기 →</a>
+  <div class="cta-contact">
+    PD 배민기 · <a href="mailto:mkbae@nanali.net">mkbae@nanali.net</a>
+  </div>
+</div>
+
+</body>
+</html>

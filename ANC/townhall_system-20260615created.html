@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 친구들</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#2e2420;display:flex;align-items:flex-start;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+
+/* 전체 프레임 */
+.frame{width:340px;background:#f0ece3;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;margin:16px 0}
+
+/* ── HUD ── */
+.hud{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;background:#f0ece3}
+.hud-btn{width:38px;height:38px;border:1.5px solid #3a3028;border-radius:8px;background:#f8f6f2;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hud-btn:hover{background:#ede9e0}
+.hud-name{font-size:17px;font-weight:700;color:#3a3028;flex:1;text-align:center}
+
+/* ── 상단 고양이 영역 ── */
+.cat-stage{position:relative;display:flex;align-items:center;justify-content:center;padding:10px 0 6px;background:#f0ece3}
+.nav-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:none;cursor:pointer;font-size:22px;color:#8a7e72;display:flex;align-items:center;justify-content:center;user-select:none}
+.nav-arrow:hover{color:#3a3028}
+.nav-arrow.left{left:8px}
+.nav-arrow.right{right:8px}
+.cat-figure{width:100px;height:100px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative}
+.costume-float{position:absolute;bottom:-2px;right:-2px;font-size:20px}
+
+/* 행복도 */
+.happy-block{text-align:center;padding:4px 0 6px;background:#f0ece3}
+.happy-pct{font-size:20px;font-weight:700;color:#3a3028}
+.happy-desc{font-size:13px;color:#6a5e52;margin-top:2px}
+
+/* ── 콘텐츠 탭 ── */
+.tab-bar{display:flex;gap:0;padding:0 12px;background:#f0ece3}
+.tab-btn{padding:7px 12px;font-size:13px;font-weight:500;border:1.5px solid #ccc;border-bottom:none;border-radius:8px 8px 0 0;background:#e4e0d7;color:#8a7e72;cursor:pointer;margin-right:4px}
+.tab-btn.active{background:#fff;color:#3a3028;border-color:#3a3028;font-weight:700}
+.tab-btn.locked{background:#c8c4bc;color:#888;cursor:pointer}
+.tab-btn.disabled{cursor:default}
+
+/* ── 주민 카드 패널 ── */
+.panel{background:#fff;border:1.5px solid #3a3028;border-radius:0 12px 12px 12px;margin:0 12px;padding:14px}
+
+/* 카드 상단 2열 */
+.card-row{display:flex;gap:10px;margin-bottom:12px}
+.card-portrait{width:72px;height:72px;border-radius:10px;background:#f0ece3;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;position:relative;border:1px solid rgba(0,0,0,0.08)}
+.card-portrait .cos{position:absolute;bottom:-4px;right:-4px;font-size:14px}
+.card-info{flex:1;min-width:0}
+.name-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.cat-name-lbl{font-size:15px;font-weight:600;color:#3a3028;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{width:26px;height:26px;border:1px solid rgba(0,0,0,0.15);border-radius:6px;background:#f8f6f2;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.icon-btn:hover{background:#ede9e0}
+.num-row{font-size:12px;color:#8a7e72;margin-bottom:8px}
+.action-row{display:flex;gap:5px}
+.abtn{flex:1;padding:7px 4px;font-size:11px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;background:#f8f6f2;cursor:pointer;color:#5a4e42;display:flex;align-items:center;justify-content:center;gap:3px;line-height:1.3;text-align:center}
+.abtn:hover{background:#ede9e0}
+
+/* 타임라인 */
+.timeline-section{margin-top:12px;border-top:1px solid #ede9e0;padding-top:10px}
+.timeline-title{font-size:11px;font-weight:600;color:#8a7e72;margin-bottom:6px;letter-spacing:0.3px}
+.timeline-list{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto}
+.tl-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5a4e42;background:#f8f6f2;border-radius:6px;padding:5px 8px;line-height:1.4}
+.tl-item .tl-badge{font-size:10px;font-weight:600;flex-shrink:0;padding:1px 5px;border-radius:5px}
+.tl-item .tl-badge.pos{background:#EAF3DE;color:#3B6D11}
+.tl-item .tl-badge.neg{background:#FCEBEB;color:#A32D2D}
+.tl-item .tl-text{flex:1}
+.tl-empty{font-size:11px;color:#aaa;text-align:center;padding:12px 0}
+
+/* ── 횡스크롤 고양이 리스트 ── */
+.cat-list-wrap{padding:10px 12px 12px;background:#f0ece3;margin-top:10px}
+.cat-list-lbl{font-size:10px;color:#9a8e82;margin-bottom:6px}
+.cat-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px}
+.cat-scroll::-webkit-scrollbar{height:3px}
+.cat-scroll::-webkit-scrollbar-thumb{background:#c8b89a;border-radius:2px}
+.cat-cell{width:60px;height:60px;flex-shrink:0;border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;position:relative;transition:border-color 0.15s}
+.cat-cell:hover{border-color:rgba(0,0,0,0.25)}
+.cat-cell.active{border:2px solid #6db36d}
+.cat-cell .al{position:absolute;top:2px;right:2px;font-size:9px;line-height:1}
+.cat-cell .cos-s{position:absolute;bottom:2px;right:2px;font-size:8px;line-height:1}
+
+/* 토스트 */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#3a3028;color:#f0ece3;padding:7px 16px;border-radius:16px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:100}
+.toast.on{opacity:1}
+
+/* 이름 변경 모달 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:50}
+.overlay.on{display:flex}
+.modal{background:#fff;border-radius:14px;padding:20px;width:240px}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:10px;color:#3a3028}
+.modal input{width:100%;padding:8px 10px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:13px;background:#fff;color:#3a3028;margin-bottom:10px;outline:none}
+.modal input:focus{border-color:#6db36d}
+.modal-row{display:flex;gap:7px}
+.modal-row button{flex:1;padding:8px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid rgba(0,0,0,0.12);background:#f8f6f2;color:#3a3028}
+.modal-row button.pri{background:#6db36d;color:#fff;border-color:#6db36d}
+.modal-row button.pri:hover{background:#5a9e5a}
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- HUD -->
+  <div class="hud">
+    <button class="hud-btn" onclick="toast('현재 고양이의 도감으로 이동합니다')" title="도감">📘</button>
+    <div class="hud-name" id="hud-name">하루</div>
+    <button class="hud-btn" onclick="toast('현재 고양이를 월드상에서 찾아갔습니다')" title="월드에서 찾기">🔍</button>
+  </div>
+
+  <!-- 고양이 스테이지 -->
+  <div class="cat-stage">
+    <button class="nav-arrow left" onclick="moveCat(-1)">‹</button>
+    <div class="cat-figure" id="cat-figure">🐱</div>
+    <button class="nav-arrow right" onclick="moveCat(1)">›</button>
+  </div>
+
+  <!-- 행복도 -->
+  <div class="happy-block">
+    <div class="happy-pct" id="happy-pct">😐 50%</div>
+    <div class="happy-desc" id="happy-desc">그냥 그래요</div>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tab-bar">
+    <button class="tab-btn active disabled" id="tab-center">주민센터</button>
+    <button class="tab-btn" onclick="toast('코스튬으로 이동합니다')">코스튬</button>
+    <button class="tab-btn locked" onclick="toast('잠긴 콘텐츠입니다')">🔒병원</button>
+    <button class="tab-btn locked" onclick="toast('잠긴 콘텐츠입니다')">🔒아이템</button>
+  </div>
+
+  <!-- 주민 카드 패널 -->
+  <div class="panel" id="panel">
+
+    <!-- 카드 상단 -->
+    <div class="card-row">
+      <div class="card-portrait" id="card-portrait">
+        <span id="card-emoji">🐱</span>
+        <span class="cos" id="card-costume"></span>
+      </div>
+      <div class="card-info">
+        <div class="name-row">
+          <span class="cat-name-lbl" id="card-name">하루</span>
+          <button class="icon-btn" onclick="openModal()" title="이름 변경">✏️</button>
+        </div>
+        <div class="num-row" id="card-num">No.1</div>
+        <div class="action-row">
+          <button class="abtn" onclick="toast('현재 고양이를 급식소로 데려갑니다')">🍚 먹이<br>주기</button>
+          <button class="abtn" onclick="toast('현재 고양이를 놀아줍니다')">🎾 놀아<br>주기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="timeline-section">
+      <div class="timeline-title">행복도 변화 타임라인</div>
+      <div class="timeline-list" id="timeline-list">
+        <div class="tl-empty">아직 기록이 없어요</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 횡스크롤 고양이 리스트 -->
+  <div class="cat-list-wrap">
+    <div class="cat-list-lbl">보유한 고양이</div>
+    <div class="cat-scroll" id="cat-scroll"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>이름 변경</h3>
+    <input id="name-input" type="text" maxlength="12" placeholder="새 이름 입력">
+    <div class="modal-row">
+      <button onclick="closeModal()">취소</button>
+      <button class="pri" onclick="saveName()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 데이터 ──
+var EMOJIS   = ['🐱','😺','😸','😹','😻','🙀','😿','🐈','🐈','🦁'];
+var COSTUMES = [null,'👒','🎩','🎀',null,'👑','🕶️',null,'🌸',null];
+var NAMES    = ['하루','나비','루나','코코','모모','별이','구름','솔이','복숭아','미미'];
+var AGES     = [1,3,0,7,12,2,5,9,14,6];
+
+var cats = [];
+for (var i = 0; i < 10; i++) {
+  cats.push({
+    id: i+1,
+    name: NAMES[i],
+    emoji: EMOJIS[i],
+    costume: COSTUMES[i],
+    happy: Math.floor(Math.random()*60)+40,
+    timeline: []
+  });
+}
+
+// 더미 타임라인 몇 개 미리 채우기
+var DUMMY_EVENTS = [
+  ['캣타워에 올라갔습니다.', true, 5],
+  ['밥을 맛있게 먹었습니다.', true, 8],
+  ['주인이 자꾸 만져서 싫습니다.', false, 5],
+  ['낮잠을 푹 잤습니다.', true, 3],
+  ['모르는 고양이가 왔습니다.', false, 4],
+];
+for (var i = 0; i < cats.length; i++) {
+  var n = Math.floor(Math.random()*4);
+  for (var j = 0; j < n; j++) {
+    var ev = DUMMY_EVENTS[Math.floor(Math.random()*DUMMY_EVENTS.length)];
+    cats[i].timeline.push({text: ev[0], pos: ev[1], val: ev[2]});
+  }
+}
+
+var sel = 0;
+
+// ── 행복 표시 ──
+function happyFace(p) {
+  if (p >= 80) return '😄';
+  if (p >= 60) return '🙂';
+  if (p >= 40) return '😐';
+  if (p >= 20) return '😟';
+  return '😢';
+}
+function happyDesc(p) {
+  if (p >= 80) return '매우 행복해요!';
+  if (p >= 60) return '기분이 좋아요';
+  if (p >= 40) return '그냥 그래요';
+  if (p >= 20) return '좀 우울해요..';
+  return '배고파요..!';
+}
+
+// ── 렌더 ──
+function render() {
+  var cat = cats[sel];
+  var hp = Math.min(100, cat.happy);
+
+  // HUD
+  document.getElementById('hud-name').textContent = cat.name;
+
+  // 스테이지
+  var fig = document.getElementById('cat-figure');
+  fig.innerHTML = cat.emoji + (cat.costume ? '<span class="costume-float">'+cat.costume+'</span>' : '');
+
+  // 행복도
+  document.getElementById('happy-pct').textContent = happyFace(hp) + ' ' + hp + '%';
+  document.getElementById('happy-desc').textContent = happyDesc(hp);
+
+  // 카드
+  document.getElementById('card-emoji').textContent = cat.emoji;
+  document.getElementById('card-costume').textContent = cat.costume || '';
+  document.getElementById('card-name').textContent = cat.name;
+  document.getElementById('card-num').textContent = 'No.' + cat.id;
+
+  // 타임라인
+  renderTimeline(cat);
+
+  // 스크롤 리스트
+  renderScroll();
+}
+
+function renderTimeline(cat) {
+  var el = document.getElementById('timeline-list');
+  if (!cat.timeline.length) {
+    el.innerHTML = '<div class="tl-empty">아직 기록이 없어요</div>';
+    return;
+  }
+  var html = '';
+  var list = cat.timeline.slice().reverse();
+  for (var i = 0; i < list.length; i++) {
+    var ev = list[i];
+    var cls = ev.pos ? 'pos' : 'neg';
+    var sign = ev.pos ? '행복+' : '불행+';
+    html += '<div class="tl-item">' +
+      '<span class="tl-text">' + ev.text + '</span>' +
+      '<span class="tl-badge '+cls+'">' + sign + ev.val + '</span>' +
+    '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderScroll() {
+  var wrap = document.getElementById('cat-scroll');
+  var html = '';
+  for (var i = 0; i < cats.length; i++) {
+    var cat = cats[i];
+    html += '<div class="cat-cell'+(i===sel?' active':'')+'" onclick="selectCat('+i+')" title="'+cat.name+'">' +
+      cat.emoji +
+      (cat.costume ? '<span class="cos-s">'+cat.costume+'</span>' : '') +
+    '</div>';
+  }
+  wrap.innerHTML = html;
+}
+
+// ── 인터랙션 ──
+function selectCat(i) {
+  sel = i;
+  render();
+}
+
+function moveCat(dir) {
+  sel = (sel + dir + cats.length) % cats.length;
+  render();
+}
+
+// 임시 타임라인 이벤트 추가 (먹이/놀기 버튼 시 랜덤 발생 연출)
+var FEED_EVENTS = [
+  ['맛있는 밥을 먹었습니다.', true, 8],
+  ['밥그릇이 비어있었습니다.', false, 3],
+  ['좋아하는 참치캔이었습니다!', true, 12],
+];
+var PLAY_EVENTS = [
+  ['신나게 뛰어놀았습니다.', true, 7],
+  ['장난감이 시시했습니다.', false, 3],
+  ['집사랑 신나게 놀았습니다.', true, 10],
+];
+
+function addEvent(pool) {
+  var cat = cats[sel];
+  var ev = pool[Math.floor(Math.random()*pool.length)];
+  cat.timeline.push({text: ev[0], pos: ev[1], val: ev[2]});
+  if (cat.timeline.length > 10) cat.timeline.shift();
+  if (ev[1]) cat.happy = Math.min(100, cat.happy + ev[2]);
+  else cat.happy = Math.max(0, cat.happy - ev[2]);
+  render();
+}
+
+// 버튼 onclick 재정의 (먹이주기/놀아주기 타임라인 반영)
+document.addEventListener('DOMContentLoaded', function() {
+  // 먹이주기
+  var btns = document.querySelectorAll('.abtn');
+  btns[0].onclick = function() {
+    toast('현재 고양이를 급식소로 데려갑니다');
+    setTimeout(function(){ addEvent(FEED_EVENTS); }, 600);
+  };
+  btns[1].onclick = function() {
+    toast('현재 고양이를 놀아줍니다');
+    setTimeout(function(){ addEvent(PLAY_EVENTS); }, 600);
+  };
+});
+
+function toast(msg) {
+  var t = document.getElementById('toast-el');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.classList.remove('on'); }, 2000);
+}
+
+function openModal() {
+  document.getElementById('name-input').value = cats[sel].name;
+  document.getElementById('overlay').classList.add('on');
+  setTimeout(function(){ document.getElementById('name-input').focus(); }, 50);
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('on');
+}
+function saveName() {
+  var v = document.getElementById('name-input').value.trim();
+  if (!v) return;
+  cats[sel].name = v;
+  closeModal();
+  render();
+}
+document.getElementById('name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveName();
+  if (e.key === 'Escape') closeModal();
+});
+
+render();
+</script>
+</body>
+</html>

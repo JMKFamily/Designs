@@ -1,335 +1,321 @@
 
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.wrap { display: flex; justify-content: center; padding: 1.5rem 1rem; background: var(--color-background-tertiary); min-height: 100vh; }
-.phone { width: 360px; background: #f5f0e8; border-radius: 32px; border: 0.5px solid var(--color-border-secondary); overflow: hidden; display: flex; flex-direction: column; min-height: 700px; }
-.hud { background: #3a2e22; color: #f5f0e8; padding: 12px 16px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-radius: 32px 32px 0 0; }
-.hud-title { font-size: 15px; font-weight: 500; }
-.hud-res { display: flex; gap: 12px; align-items: center; }
-.coin { display: flex; align-items: center; gap: 4px; }
-.coin-dot { width: 10px; height: 10px; border-radius: 50%; background: #f0c040; }
-.gem-dot { width: 10px; height: 10px; border-radius: 50%; background: #88aaff; }
-.back-btn { display: flex; align-items: center; gap: 4px; font-size: 12px; opacity: 0.8; cursor: pointer; }
-.facility-info { background: #fff9f0; border-bottom: 0.5px solid #d4c9b0; padding: 14px; display: flex; gap: 12px; align-items: flex-start; }
-.fac-img { width: 72px; height: 72px; border-radius: var(--border-radius-md); background: #ece4d0; border: 0.5px solid #c4b89a; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; position: relative; }
-.fac-alert { position: absolute; top: -4px; right: -4px; width: 14px; height: 14px; border-radius: 50%; background: #e8b400; border: 2px solid #fff9f0; }
-.fac-detail { flex: 1; }
-.fac-name { font-size: 14px; font-weight: 500; color: #3a2e22; }
-.fac-level { font-size: 11px; color: #7a6e5a; margin-bottom: 4px; }
-.fac-desc { font-size: 11px; color: #7a6e5a; line-height: 1.4; margin-bottom: 6px; }
-.fac-uses { font-size: 12px; font-weight: 500; color: #3a2e22; margin-bottom: 8px; }
-.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-.status-active { background: #d4edda; color: #1a5c2a; }
-.status-broken { background: #fde8e8; color: #8c1a1a; }
-.status-repairing { background: #fff3cd; color: #7a5000; }
-.status-demolishing { background: #fde8e8; color: #8c1a1a; }
-.status-done { background: #d4edda; color: #1a5c2a; }
-.fac-upgrade-btn { display: flex; align-items: center; justify-content: center; gap: 4px; background: #3a2e22; color: #f5f0e8; border: none; border-radius: var(--border-radius-md); padding: 6px 12px; font-size: 11px; cursor: pointer; margin-top: 6px; width: 100%; }
-.fac-upgrade-btn:disabled { opacity: 0.4; cursor: default; }
-.fac-actions { display: flex; gap: 6px; margin-top: 6px; }
-.fac-action-btn { flex: 1; border: 0.5px solid #c4b89a; background: transparent; border-radius: var(--border-radius-md); padding: 5px 0; font-size: 10px; color: #3a2e22; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px; }
-.fac-action-btn:hover { background: #ece4d0; }
-.fac-action-btn.danger { color: #8c1a1a; border-color: #f0c0c0; }
-.fac-nav-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-top: 0.5px solid #d4c9b0; }
-.nav-icon-btn { width: 32px; height: 32px; border-radius: 50%; border: 0.5px solid #c4b89a; background: #ece4d0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #3a2e22; font-size: 14px; }
-.fac-list { flex: 1; overflow-y: auto; padding: 12px; }
-.list-title { font-size: 11px; color: #7a6e5a; font-weight: 500; margin-bottom: 8px; }
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.cell { border-radius: var(--border-radius-md); border: 0.5px solid #c4b89a; background: #fff9f0; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; position: relative; transition: background 0.15s; }
-.cell:hover { background: #ece4d0; }
-.cell.selected { border-color: #3a2e22; border-width: 1.5px; background: #ece4d0; }
-.cell-img { font-size: 22px; }
-.cell-name { font-size: 9px; color: #3a2e22; text-align: center; line-height: 1.2; }
-.cell-status { width: 8px; height: 8px; border-radius: 50%; }
-.s-active { background: #2a9c4a; }
-.s-broken { background: #e04040; }
-.s-repairing { background: #e0a000; }
-.s-demolishing { background: #e04040; }
-.s-done { background: #2a9c4a; }
-.cell-alert { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #e8b400; border: 1.5px solid #f5f0e8; }
-.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(58,46,34,0.92); color: #f5f0e8; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity 0.3s; white-space: nowrap; z-index: 100; }
-.toast.show { opacity: 1; }
-.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; border-radius: 32px; z-index: 50; }
-.modal { background: #fff9f0; border-radius: var(--border-radius-lg); border: 0.5px solid #d4c9b0; padding: 20px 16px; width: 260px; }
-.modal-title { font-size: 14px; font-weight: 500; color: #3a2e22; margin-bottom: 8px; }
-.modal-body { font-size: 12px; color: #7a6e5a; line-height: 1.5; margin-bottom: 16px; }
-.modal-btns { display: flex; gap: 8px; }
-.modal-btn { flex: 1; padding: 8px; border-radius: var(--border-radius-md); font-size: 12px; cursor: pointer; border: 0.5px solid #c4b89a; background: transparent; color: #3a2e22; }
-.modal-btn.primary { background: #3a2e22; color: #f5f0e8; border-color: #3a2e22; }
-.modal-btn.danger { background: #8c1a1a; color: #fff; border-color: #8c1a1a; }
-.timer-bar { height: 4px; background: #ece4d0; border-radius: 2px; margin: 6px 0; overflow: hidden; }
-.timer-fill { height: 100%; background: #e0a000; border-radius: 2px; transition: width 0.3s; }
-progress-text { font-size: 10px; color: #7a6e5a; }
+*{box-sizing:border-box;margin:0;padding:0;}
+.wrap{display:flex;justify-content:center;padding:1.5rem 1rem;background:var(--color-background-tertiary);}
+.phone{width:360px;background:#f0ebe0;border-radius:28px;border:0.5px solid #b0a898;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+.hud{background:#2e2418;color:#f0ebe0;padding:12px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-radius:28px 28px 0 0;}
+.hud-title{font-size:14px;font-weight:500;}
+.hud-res{display:flex;gap:10px;font-size:12px;}
+.cd{width:9px;height:9px;border-radius:50%;background:#f0c040;display:inline-block;}
+.gd{width:9px;height:9px;border-radius:50%;background:#7090ff;display:inline-block;flex-shrink:0;}
+
+.fac-card{background:#fff8ee;border-bottom:0.5px solid #c8bca8;padding:10px;display:grid;grid-template-columns:90px 1fr;gap:0;}
+
+.fac-img-col{display:flex;flex-direction:column;align-items:center;padding-right:8px;gap:6px;}
+.fac-img-box{width:76px;height:76px;border-radius:8px;background:#e8e0cc;border:0.5px solid #c0b49a;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
+.fac-alert-dot{position:absolute;top:-5px;left:-5px;width:14px;height:14px;border-radius:50%;background:#d4b800;border:2px solid #fff8ee;}
+.status-foot{display:flex;align-items:center;gap:4px;width:76px;}
+.status-badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:20px;white-space:nowrap;display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.sb-active{background:#d4edda;color:#1a5c2a;}
+.sb-broken{background:#fde8e8;color:#8c1a1a;}
+.sb-repairing{background:#fff3cd;color:#7a5000;}
+.sb-demolishing{background:#fde8e8;color:#8c1a1a;}
+.sb-done{background:#d4edda;color:#1a5c2a;}
+.use-count{font-size:9px;color:#5a5048;white-space:nowrap;}
+
+.fac-right{display:flex;flex-direction:column;gap:0;}
+.row1{display:flex;align-items:center;gap:4px;padding-bottom:5px;border-bottom:0.5px solid #e0d8c8;}
+.fac-name{font-size:13px;font-weight:500;color:#2e2418;flex:1;}
+.fac-lv{font-size:11px;color:#7a6e5a;flex-shrink:0;}
+.trash-btn{width:26px;height:26px;border-radius:6px;border:0.5px solid #c8bca8;background:#f5efe3;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#7a6e5a;font-size:13px;flex-shrink:0;}
+.trash-btn:hover{background:#ece0cc;}
+
+.row2{padding:5px 0;font-size:11px;color:#7a6e5a;line-height:1.4;border-bottom:0.5px solid #e0d8c8;}
+
+.row3{padding:5px 0;border-bottom:0.5px solid #e0d8c8;display:flex;gap:6px;min-height:40px;align-items:stretch;}
+.stat-box{flex:1;background:#f5f0e4;border-radius:6px;padding:4px 6px;display:flex;align-items:center;gap:5px;}
+.stat-val{font-size:16px;font-weight:500;color:#2e2418;}
+.stat-label{font-size:9px;color:#8a7e6a;line-height:1.3;}
+.stat-delta-p{font-size:12px;font-weight:500;color:#1a6c2a;}
+.stat-delta-m{font-size:12px;font-weight:500;color:#8c1a1a;}
+
+.repair-btn{flex:1;background:#2a9c4a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;}
+.repair-btn:hover{background:#1a8c3a;}
+.timer-box{flex:1;background:#e8a020;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#fff;}
+.timer-box.demo{background:#c03020;}
+
+/* 어두운 오버레이 (철거/즉시수리 확인) */
+.dark-overlay{background:#1c1810;border-radius:6px;flex:1;padding:7px 8px;color:#f0ebe0;display:flex;flex-direction:column;gap:4px;}
+.ov-title{font-size:10px;color:#a09080;line-height:1.3;}
+.ov-main{font-size:12px;font-weight:500;line-height:1.4;}
+.ov-sub{display:flex;gap:4px;align-items:center;font-size:12px;color:#a09080;}
+.ov-time{font-size:13px;font-weight:500;color:#e8a020;background:#2e2418;border-radius:4px;padding:2px 6px;}
+
+.row4{padding-top:6px;display:flex;gap:6px;align-items:center;}
+.goto-btn{background:#2196f3;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.goto-btn:hover{background:#1976d2;}
+.upgrade-btn{flex:1;background:#e8e0cc;border:none;border-radius:6px;padding:5px 0;font-size:11px;color:#2e2418;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:500;}
+.upgrade-btn:hover{background:#d8c8b0;}
+.cancel-btn{flex:1;background:#cc2222;color:#fff;border:none;border-radius:6px;padding:5px 0;font-size:11px;cursor:pointer;font-weight:500;}
+.cancel-btn:hover{background:#aa1818;}
+.confirm-btn{flex:1;background:#e8e0cc;border:none;border-radius:6px;padding:5px 0;font-size:11px;color:#2e2418;cursor:pointer;font-weight:500;display:flex;align-items:center;justify-content:center;gap:3px;}
+.collect-btn{flex:1;border:none;border-radius:6px;padding:5px 0;font-size:11px;cursor:pointer;font-weight:500;}
+.collect-repair{background:#d4edda;color:#1a5c2a;}
+.collect-demo{background:#e8e0cc;color:#5a4020;}
+.done-box{flex:1;border-radius:6px;display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:11px;font-weight:500;}
+.done-repair{background:#d4edda;color:#1a5c2a;}
+.done-demo{background:#e8e0cc;color:#5a4020;}
+
+.fac-list{padding:10px 10px 16px;}
+.list-lbl{font-size:10px;color:#7a6e5a;margin-bottom:6px;font-weight:500;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.cell{border-radius:8px;border:0.5px solid #c8bca8;background:#fff8ee;padding:7px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;transition:background .12s;}
+.cell:hover{background:#ece0cc;}
+.cell.sel{border:1.5px solid #2e2418;background:#ece0cc;}
+.cell-img{font-size:22px;}
+.cell-name{font-size:9px;color:#2e2418;text-align:center;line-height:1.2;}
+.cell-dot{width:7px;height:7px;border-radius:50%;}
+.d-active{background:#2a9c4a;} .d-broken{background:#e03030;} .d-timer{background:#d4a000;} .d-done{background:#2a9c4a;}
+.cell-alert{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#d4b800;border:1.5px solid #f0ebe0;}
+.toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,.9);color:#f0ebe0;padding:8px 18px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;z-index:99;}
+.toast.show{opacity:1;}
 </style>
 
 <div class="wrap">
 <div class="phone" id="app">
-
 <div class="hud">
-  <div class="back-btn" onclick="showToast('뒤로가기')"><i class="ti ti-arrow-left" style="font-size:14px"></i></div>
+  <div style="font-size:12px;color:#a09080;cursor:pointer;" onclick="showToast('뒤로가기')"><i class="ti ti-arrow-left" style="font-size:14px" aria-hidden="true"></i></div>
   <div class="hud-title">관리사무소</div>
   <div class="hud-res">
-    <div class="coin"><div class="coin-dot"></div><span id="coins">12,400</span></div>
-    <div class="coin"><div class="gem-dot"></div><span id="gems">88</span></div>
+    <div style="display:flex;align-items:center;gap:3px;"><div class="cd"></div><span id="coins">12,400</span></div>
+    <div style="display:flex;align-items:center;gap:3px;"><div class="gd"></div><span id="gems-disp">88</span></div>
   </div>
 </div>
-
-<div class="facility-info" id="fac-info"></div>
-
-<div style="height:0.5px; background:#d4c9b0;"></div>
-
+<div class="fac-card" id="fac-card"></div>
 <div class="fac-list">
-  <div class="list-title">보유 시설물</div>
+  <div class="list-lbl">보유 시설물</div>
   <div class="grid" id="grid"></div>
 </div>
-
 </div>
 </div>
-
-<div id="toast" class="toast"></div>
+<div class="toast" id="toast-el"></div>
 
 <script>
-const FACILITIES = [
-  { id:0, name:'캣타워', icon:'🗼', status:'active', uses:[8,10], level:3, desc:'고양이들이 올라가며 행복도를 얻습니다.', time:10, hasAlert:false },
-  { id:1, name:'급식소', icon:'🍚', status:'broken', uses:[0,6], level:2, desc:'6시간마다 새 고양이가 방문합니다.', time:10, hasAlert:true },
-  { id:2, name:'놀이터', icon:'🎠', status:'repairing', uses:[3,8], level:4, desc:'고양이가 놀며 행복도를 얻습니다.', time:10, hasAlert:false, timerPct:55 },
-  { id:3, name:'햇빛 테라스', icon:'☀️', status:'active', uses:[5,10], level:1, desc:'고양이가 낮잠을 잡니다.', time:10, hasAlert:false },
-  { id:4, name:'낚시터', icon:'🎣', status:'done', uses:[0,5], level:2, desc:'수리 또는 철거를 선택하세요.', time:0, hasAlert:true, doneType:'repair' },
-  { id:5, name:'미용실', icon:'✂️', status:'demolishing', uses:[0,4], level:1, desc:'코스튬 아이템을 만듭니다.', time:10, hasAlert:false, timerPct:30 },
-  { id:6, name:'병원', icon:'🏥', status:'active', uses:[7,10], level:5, desc:'고양이 건강을 관리합니다.', time:10, hasAlert:false },
-  { id:7, name:'텃밭', icon:'🌱', status:'active', uses:[4,10], level:2, desc:'재료를 생산합니다.', time:10, hasAlert:false },
+const FAC=[
+  {id:0,name:'캣타워',icon:'🗼',status:'active',uses:[22,50],level:3,desc:'고양이들이 올라가며 행복도를 얻습니다.',repairMin:50,alert:false},
+  {id:1,name:'급식소',icon:'🍚',status:'broken',uses:[0,50],level:2,desc:'6시간마다 새 고양이가 방문합니다.',repairMin:50,alert:true},
+  {id:2,name:'놀이터',icon:'🎠',status:'repairing',uses:[22,50],level:4,desc:'고양이가 놀며 행복도를 얻습니다.',repairMin:50,alert:false,timerSec:2999},
+  {id:3,name:'햇빛 테라스',icon:'☀️',status:'active',uses:[38,50],level:1,desc:'고양이가 낮잠을 잡니다.',repairMin:50,alert:false},
+  {id:4,name:'낚시터',icon:'🎣',status:'demolishing',uses:[0,50],level:2,desc:'수리 또는 철거를 선택하세요.',repairMin:50,alert:true,timerSec:59},
+  {id:5,name:'미용실',icon:'✂️',status:'active',uses:[10,50],level:1,desc:'코스튬 아이템을 만듭니다.',repairMin:50,alert:false},
+  {id:6,name:'병원',icon:'🏥',status:'active',uses:[45,50],level:5,desc:'고양이 건강을 관리합니다.',repairMin:50,alert:false},
+  {id:7,name:'텃밭',icon:'🌱',status:'active',uses:[20,50],level:2,desc:'재료를 생산합니다.',repairMin:50,alert:false},
 ];
+let sel=0,gems=88;
+let mode='normal'; /* normal | upgrade | demo | instant_repair */
+const timers={};
 
-let selected = 0;
-let modal = null;
-let timers = {};
-let gems = 88;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 
-function getStatusLabel(f) {
-  const map = { active:'가동중', broken:'파손됨', repairing:'수리중', demolishing:'철거중', done: f.doneType === 'repair' ? '수리완료' : '공사완료' };
-  return map[f.status] || f.status;
+function startTick(id){
+  if(timers[id]) return;
+  timers[id]=setInterval(()=>{
+    const f=FAC[id];if(!f){clearInterval(timers[id]);delete timers[id];return;}
+    f.timerSec=Math.max(0,(f.timerSec||0)-1);
+    if(f.timerSec===0){
+      clearInterval(timers[id]);delete timers[id];
+      f.status=f.status==='repairing'?'done_repair':'done_demo';
+      f.alert=true;
+    }
+    renderGrid();if(sel===id)renderCard();
+  },1000);
 }
-function getStatusClass(s) {
-  const map = { active:'status-active', broken:'status-broken', repairing:'status-repairing', demolishing:'status-demolishing', done:'status-done' };
-  return map[s] || 'status-active';
+FAC.forEach(f=>{if(f.status==='repairing'||f.status==='demolishing')startTick(f.id);});
+
+function dotClass(s){
+  if(s==='active')return 'd-active';
+  if(s==='broken')return 'd-broken';
+  if(s==='done_repair'||s==='done_demo')return 'd-done';
+  return 'd-timer';
+}
+function badgeCls(s){
+  const m={active:'sb-active',broken:'sb-broken',repairing:'sb-repairing',demolishing:'sb-demolishing',done_repair:'sb-done',done_demo:'sb-done'};
+  return m[s]||'sb-active';
+}
+function badgeLabel(s){
+  const m={active:'가동중',broken:'수리 필요',repairing:'수리중',demolishing:'철거중',done_repair:'수리 완료',done_demo:'공사 완료'};
+  return m[s]||'가동중';
+}
+function badgeIcon(s){
+  if(s==='active')return '<i class="ti ti-circle-check" style="font-size:10px;" aria-hidden="true"></i>';
+  if(s==='broken')return '<i class="ti ti-tool" style="font-size:10px;" aria-hidden="true"></i>';
+  if(s==='repairing'||s==='demolishing')return '<span style="font-size:9px;">🚧</span>';
+  if(s==='done_repair'||s==='done_demo')return '<i class="ti ti-circle-check" style="font-size:10px;" aria-hidden="true"></i>';
+  return '';
 }
 
-function renderInfo() {
-  const f = FACILITIES[selected];
-  const el = document.getElementById('fac-info');
-  const usesText = f.status === 'active' || f.status === 'broken' ? `${f.uses[0]} / ${f.uses[1]}` : '— / —';
+function renderCard(){
+  const f=FAC[sel];if(!f){document.getElementById('fac-card').innerHTML='';return;}
+  const s=f.status;
 
-  let actionHTML = '';
-  if (f.status === 'broken') {
-    actionHTML = `
-      <div class="fac-actions">
-        <button class="fac-action-btn" onclick="startRepair(${f.id})"><i class="ti ti-tool" style="font-size:12px" aria-hidden="true"></i> 수리 (${f.time}분)</button>
-        <button class="fac-action-btn danger" onclick="startDemolish(${f.id})"><i class="ti ti-bulldozer" style="font-size:12px" aria-hidden="true"></i> 철거 (1분)</button>
+  const imgCol=`
+    <div class="fac-img-col">
+      <div class="fac-img-box">
+        ${f.alert?'<div class="fac-alert-dot"></div>':''}
+        ${f.icon}
+      </div>
+      <div class="status-foot">
+        <span class="status-badge ${badgeCls(s)}">${badgeIcon(s)} ${badgeLabel(s)}</span>
+        <span class="use-count">${f.uses[0]}/${f.uses[1]}</span>
+      </div>
+    </div>`;
+
+  let row3='',row4='';
+
+  if(mode==='upgrade'){
+    /* 업그레이드 미리보기 */
+    row3=`
+      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}<span class="stat-delta-p">+5</span></div></div>
+      </div>
+      <div class="stat-box"><i class="ti ti-clock" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">수리 시간 (분)</div><div class="stat-val">${f.repairMin}<span class="stat-delta-m">-5</span></div></div>
       </div>`;
-  } else if (f.status === 'repairing') {
-    const pct = f.timerPct || 50;
-    actionHTML = `
-      <div style="margin-top:6px;">
-        <div style="font-size:10px; color:#7a6e5a; margin-bottom:3px;">수리중... (보석으로 단축)</div>
-        <div class="timer-bar"><div class="timer-fill" style="width:${pct}%"></div></div>
-        <button class="fac-upgrade-btn" style="margin-top:4px;" onclick="skipTimer(${f.id},'repair')"><i class="ti ti-diamond" style="font-size:12px" aria-hidden="true"></i> 보석으로 즉시 완료</button>
+    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
+          <button class="confirm-btn" onclick="doUpgrade()"><div class="gd"></div>확인 ${(f.level+1)*10}</button>`;
+
+  } else if(mode==='demo'){
+    /* 철거 확인 오버레이 */
+    row3=`<div class="dark-overlay">
+      <div class="ov-title">시설을 철거하시겠습니까?<br>${f.desc.slice(0,12)}...</div>
+      <div class="ov-main"><i class="ti ti-settings" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> 0 ~ ${f.uses[1]} 을 획득합니다.</div>
+      <div class="ov-sub"><div class="gd"></div>${Math.round(f.uses[1]*0.5)}<div class="gd" style="margin-left:6px;"></div>${Math.round(f.uses[1]*0.5)}</div>
+    </div>`;
+    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
+          <button class="confirm-btn" onclick="doDemo()"><div class="gd"></div>철거하기 ${Math.round(f.uses[1]*0.5)}</button>`;
+
+  } else if(mode==='instant_repair'){
+    /* 즉시 수리 확인 오버레이 */
+    row3=`<div class="dark-overlay">
+      <div class="ov-title">즉시 수리하시겠습니까?<br>${f.desc.slice(0,12)}...</div>
+      <div class="ov-main">이용 횟수 ${f.uses[1]}회 즉시 충전</div>
+      <div class="ov-sub"><div class="gd"></div>${Math.round(f.uses[1]*0.5)}<span class="ov-time">${fmt(f.timerSec||0)}</span></div>
+    </div>`;
+    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
+          <button class="confirm-btn" onclick="doInstantRepair()"><div class="gd"></div>수리하기 10</button>`;
+
+  } else if(s==='active'){
+    row3=`
+      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
+      </div>
+      <div class="stat-box"><i class="ti ti-clock" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">수리 시간 (분)</div><div class="stat-val">${f.repairMin}</div></div>
       </div>`;
-  } else if (f.status === 'demolishing') {
-    const pct = f.timerPct || 30;
-    actionHTML = `
-      <div style="margin-top:6px;">
-        <div style="font-size:10px; color:#7a6e5a; margin-bottom:3px;">철거중...</div>
-        <div class="timer-bar"><div class="timer-fill" style="width:${pct}%; background:#e04040;"></div></div>
-        <button class="fac-upgrade-btn" style="margin-top:4px;" onclick="skipTimer(${f.id},'demolish')"><i class="ti ti-diamond" style="font-size:12px" aria-hidden="true"></i> 보석으로 즉시 완료</button>
-      </div>`;
-  } else if (f.status === 'done') {
-    const isDoneRepair = f.doneType === 'repair';
-    actionHTML = `
-      <button class="fac-upgrade-btn" style="margin-top:6px; background:${isDoneRepair ? '#1a5c2a' : '#5c3a1a'};" onclick="collectDone(${f.id})">
-        <i class="ti ti-${isDoneRepair ? 'refresh' : 'package'}" style="font-size:12px" aria-hidden="true"></i>
-        ${isDoneRepair ? '이용 재개' : '재료 획득'}
-      </button>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="upgrade-btn" onclick="setMode('upgrade')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>${(f.level+1)*10} 업그레이드</button>`;
+
+  } else if(s==='broken'){
+    row3=`
+      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
+      </div>
+      <button class="repair-btn" onclick="startRepair(${f.id})">수리하기</button>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="upgrade-btn" onclick="showToast('수리 후 업그레이드 가능합니다.')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>${(f.level+1)*10} 업그레이드</button>`;
+
+  } else if(s==='repairing'){
+    row3=`
+      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
+      </div>
+      <div class="timer-box">${fmt(f.timerSec||0)}</div>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="upgrade-btn" onclick="setMode('instant_repair')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>업그레이드</button>`;
+
+  } else if(s==='demolishing'){
+    row3=`
+      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
+        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
+      </div>
+      <div class="timer-box demo">${fmt(f.timerSec||0)}</div>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="upgrade-btn" onclick="doInstantDemo()"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>단축</button>`;
+
+  } else if(s==='done_repair'){
+    row3=`<div class="done-box done-repair"><i class="ti ti-circle-check" style="font-size:14px;" aria-hidden="true"></i>수리 완료! 이용을 재개하세요.</div>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="collect-btn collect-repair" onclick="collectRepair(${f.id})">이용 재개</button>`;
+
+  } else if(s==='done_demo'){
+    row3=`<div class="done-box done-demo"><i class="ti ti-package" style="font-size:14px;" aria-hidden="true"></i>철거 완료! 재료를 획득하세요.</div>`;
+    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
+          <button class="collect-btn collect-demo" onclick="collectDemo(${f.id})">재료 획득</button>`;
   }
 
-  let upgradeHTML = '';
-  if (f.status === 'active') {
-    upgradeHTML = `<button class="fac-upgrade-btn" onclick="tryUpgrade(${f.id})"><i class="ti ti-arrow-up" style="font-size:12px" aria-hidden="true"></i> Lv.${f.level} → Lv.${f.level+1} 업그레이드 (보석 ${(f.level+1)*5}개)</button>`;
-  }
-
-  el.innerHTML = `
-    <div class="fac-img">
-      ${f.icon}
-      ${f.hasAlert ? '<div class="fac-alert"></div>' : ''}
-    </div>
-    <div class="fac-detail">
-      <div class="fac-name">${f.name} <span style="font-size:10px; color:#7a6e5a;">Lv.${f.level}</span></div>
-      <div class="fac-desc">${f.desc}</div>
-      <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-        <span class="status-badge ${getStatusClass(f.status)}">${getStatusLabel(f)}</span>
-        ${f.status === 'active' ? `<span style="font-size:11px; color:#3a2e22;">이용 ${usesText}</span>` : ''}
+  document.getElementById('fac-card').innerHTML=`
+    ${imgCol}
+    <div class="fac-right">
+      <div class="row1">
+        <span class="fac-name">${f.name}</span>
+        <span class="fac-lv">Lv.${f.level}</span>
+        <div class="trash-btn" onclick="setMode('demo')" aria-label="철거"><i class="ti ti-trash" style="font-size:13px;" aria-hidden="true"></i></div>
       </div>
-      ${actionHTML}
-      ${upgradeHTML}
-    </div>
-    <div style="display:flex; flex-direction:column; gap:4px;">
-      <div class="nav-icon-btn" onclick="showToast('월드에서 시설물 위치로 이동합니다')" title="바로가기" style="margin-bottom:4px;"><i class="ti ti-map-pin" style="font-size:14px" aria-hidden="true"></i></div>
-      <div class="nav-icon-btn" title="상태" style="font-size:10px; color:#7a6e5a;">
-        ${f.status === 'active' ? '<i class="ti ti-circle-check" style="font-size:14px; color:#2a9c4a" aria-hidden="true"></i>' : f.status === 'broken' ? '<i class="ti ti-alert-circle" style="font-size:14px; color:#e04040" aria-hidden="true"></i>' : f.status === 'repairing' || f.status === 'demolishing' ? '<i class="ti ti-clock" style="font-size:14px; color:#e0a000" aria-hidden="true"></i>' : '<i class="ti ti-circle-check" style="font-size:14px; color:#2a9c4a" aria-hidden="true"></i>'}
-      </div>
-    </div>
-  `;
+      <div class="row2">${f.desc}</div>
+      <div class="row3">${row3}</div>
+      ${row4?`<div class="row4">${row4}</div>`:''}
+    </div>`;
 }
 
-function renderGrid() {
-  const g = document.getElementById('grid');
-  g.innerHTML = FACILITIES.map((f,i) => `
-    <div class="cell ${i===selected?'selected':''}" onclick="selectFac(${i})">
-      ${f.hasAlert ? '<div class="cell-alert"></div>' : ''}
+function renderGrid(){
+  document.getElementById('grid').innerHTML=FAC.map((f,i)=>`
+    <div class="cell${i===sel?' sel':''}" onclick="selectFac(${i})">
+      ${f.alert?'<div class="cell-alert"></div>':''}
       <div class="cell-img">${f.icon}</div>
       <div class="cell-name">${f.name}</div>
-      <div class="cell-status s-${f.status}"></div>
-    </div>
-  `).join('');
+      <div class="cell-dot ${dotClass(f.status)}"></div>
+    </div>`).join('');
 }
 
-function selectFac(i) {
-  selected = i;
-  renderGrid();
-  renderInfo();
-}
+function selectFac(i){sel=i;mode='normal';renderGrid();renderCard();}
+function setMode(m){mode=m;renderCard();}
 
-function startRepair(id) {
-  const f = FACILITIES[id];
-  showModal('수리를 시작하시겠어요?', `${f.name}을(를) 수리합니다.\n수리 시간: ${f.time}분\n수리 완료 후 이용 횟수가 회복됩니다.`, [
-    { label:'취소', cls:'' },
-    { label:'수리 시작', cls:'primary', action: () => {
-      f.status = 'repairing'; f.timerPct = 0; f.hasAlert = false;
-      selectFac(id);
-      showToast('수리를 시작합니다!');
-      animateTimer(id, 'repairing');
-    }}
-  ]);
+function doUpgrade(){
+  const f=FAC[sel];const cost=(f.level+1)*10;
+  if(gems<cost){showToast('보석이 부족합니다.');return;}
+  gems-=cost;document.getElementById('gems-disp').textContent=gems;
+  f.level++;f.uses[1]+=5;f.repairMin=Math.max(5,f.repairMin-5);
+  mode='normal';showToast(`Lv.${f.level} 업그레이드 완료!`);renderGrid();renderCard();
 }
-
-function startDemolish(id) {
-  const f = FACILITIES[id];
-  showModal('철거를 시작하시겠어요?', `${f.name}을(를) 철거합니다.\n철거 시간: 1분\n현재 내구도/레벨 비중에 따라 재료로 반환됩니다.`, [
-    { label:'취소', cls:'' },
-    { label:'철거', cls:'danger', action: () => {
-      f.status = 'demolishing'; f.timerPct = 0; f.hasAlert = false;
-      selectFac(id);
-      showToast('철거를 시작합니다.');
-      animateTimer(id, 'demolishing');
-    }}
-  ]);
+function startRepair(id){
+  const f=FAC[id];f.status='repairing';f.timerSec=2999;f.alert=false;
+  startTick(id);mode='normal';showToast('수리를 시작합니다!');renderGrid();renderCard();
 }
-
-function animateTimer(id, type) {
-  if (timers[id]) clearInterval(timers[id]);
-  const f = FACILITIES[id];
-  let pct = 0;
-  timers[id] = setInterval(() => {
-    pct += 2;
-    f.timerPct = pct;
-    if (pct >= 100) {
-      clearInterval(timers[id]);
-      f.status = 'done';
-      f.doneType = type === 'repairing' ? 'repair' : 'demolish';
-      f.hasAlert = true;
-      showToast(type === 'repairing' ? '수리가 완료되었습니다!' : '철거가 완료되었습니다!');
-    }
-    if (selected === id) renderInfo();
-    renderGrid();
-  }, 80);
+function doInstantRepair(){
+  const cost=10;if(gems<cost){showToast('보석이 부족합니다.');return;}
+  gems-=cost;document.getElementById('gems-disp').textContent=gems;
+  const f=FAC[sel];
+  if(timers[f.id]){clearInterval(timers[f.id]);delete timers[f.id];}
+  f.status='done_repair';f.timerSec=0;f.alert=true;
+  mode='normal';showToast('즉시 수리 완료!');renderGrid();renderCard();
 }
-
-function skipTimer(id, type) {
-  const cost = 5;
-  if (gems < cost) { showToast('보석이 부족합니다.'); return; }
-  gems -= cost;
-  document.getElementById('gems').textContent = gems;
-  if (timers[id]) clearInterval(timers[id]);
-  const f = FACILITIES[id];
-  f.status = 'done';
-  f.doneType = type === 'repair' ? 'repair' : 'demolish';
-  f.hasAlert = true;
-  showToast(`보석 ${cost}개 사용 — ${type === 'repair' ? '수리' : '철거'} 완료!`);
-  selectFac(id);
-  renderGrid();
+function doInstantDemo(){
+  const cost=10;if(gems<cost){showToast('보석이 부족합니다.');return;}
+  gems-=cost;document.getElementById('gems-disp').textContent=gems;
+  const f=FAC[sel];
+  if(timers[f.id]){clearInterval(timers[f.id]);delete timers[f.id];}
+  f.status='done_demo';f.timerSec=0;f.alert=true;
+  mode='normal';showToast('즉시 완료!');renderGrid();renderCard();
 }
-
-function collectDone(id) {
-  const f = FACILITIES[id];
-  if (f.doneType === 'repair') {
-    f.status = 'active';
-    f.uses = [f.uses[1], f.uses[1]];
-    f.hasAlert = false;
-    showToast('이용을 재개합니다!');
-    selectFac(id);
-    renderGrid();
-  } else {
-    showModal('재료를 획득하시겠어요?', `${f.name} 철거 재료를 획득합니다.\n이 시설물은 삭제됩니다.`, [
-      { label:'취소', cls:'' },
-      { label:'획득', cls:'primary', action: () => {
-        FACILITIES.splice(id, 1);
-        selected = Math.min(selected, FACILITIES.length-1);
-        renderGrid();
-        if (FACILITIES.length > 0) renderInfo();
-        showToast('재료를 획득했습니다!');
-      }}
-    ]);
-  }
-}
-
-function tryUpgrade(id) {
-  const f = FACILITIES[id];
-  const cost = (f.level+1)*5;
-  if (f.level >= 10) { showToast('최대 레벨입니다.'); return; }
-  showModal(`Lv.${f.level} → Lv.${f.level+1} 업그레이드`, `보석 ${cost}개를 사용합니다.\n• 이용 횟수 +2\n• 수리 시간 -1분`, [
-    { label:'취소', cls:'' },
-    { label:`보석 ${cost}개 사용`, cls:'primary', action: () => {
-      if (gems < cost) { showToast('보석이 부족합니다.'); return; }
-      gems -= cost;
-      document.getElementById('gems').textContent = gems;
-      f.level++;
-      f.uses = [f.uses[0], f.uses[1]+2];
-      showToast(`Lv.${f.level} 업그레이드 완료!`);
-      selectFac(id);
-    }}
-  ]);
-}
-
-function showModal(title, body, btns) {
-  const app = document.getElementById('app');
-  const ov = document.createElement('div');
-  ov.className = 'modal-overlay';
-  ov.innerHTML = `
-    <div class="modal">
-      <div class="modal-title">${title}</div>
-      <div class="modal-body" style="white-space:pre-line">${body}</div>
-      <div class="modal-btns" id="mbtn-row"></div>
-    </div>`;
-  app.appendChild(ov);
-  const row = ov.querySelector('#mbtn-row');
-  btns.forEach(b => {
-    const el = document.createElement('button');
-    el.className = 'modal-btn ' + (b.cls||'');
-    el.textContent = b.label;
-    el.onclick = () => { ov.remove(); if(b.action) b.action(); };
-    row.appendChild(el);
-  });
+function collectRepair(id){const f=FAC[id];f.status='active';f.uses=[f.uses[1],f.uses[1]];f.alert=false;mode='normal';showToast('이용을 재개합니다!');renderGrid();renderCard();}
+function collectDemo(id){FAC.splice(id,1);sel=Math.min(sel,FAC.length-1);mode='normal';showToast('재료를 획득했습니다!');renderGrid();renderCard();}
+function doDemo(){
+  const f=FAC[sel];f.status='demolishing';f.timerSec=59;f.alert=false;
+  mode='normal';startTick(f.id);showToast('철거를 시작합니다.');renderGrid();renderCard();
 }
 
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-}
+function showToast(m){const t=document.getElementById('toast-el');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2000);}
 
-renderGrid();
-renderInfo();
+renderGrid();renderCard();
 </script>

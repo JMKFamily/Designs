@@ -1,321 +1,343 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-.wrap{display:flex;justify-content:center;padding:1.5rem 1rem;background:var(--color-background-tertiary);}
-.phone{width:360px;background:#f0ebe0;border-radius:28px;border:0.5px solid #b0a898;overflow:hidden;display:flex;flex-direction:column;position:relative;}
-.hud{background:#2e2418;color:#f0ebe0;padding:12px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-radius:28px 28px 0 0;}
-.hud-title{font-size:14px;font-weight:500;}
-.hud-res{display:flex;gap:10px;font-size:12px;}
-.cd{width:9px;height:9px;border-radius:50%;background:#f0c040;display:inline-block;}
-.gd{width:9px;height:9px;border-radius:50%;background:#7090ff;display:inline-block;flex-shrink:0;}
+.root{
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  width:100%;
+  padding:1.5rem 1rem;
+  background:var(--color-background-tertiary);
+}
+.phone{
+  width:360px;
+  height:700px;
+  max-height:700px;
+  overflow:hidden;
+  background:#c8e8b0;
+  border-radius:28px;
+  border:0.5px solid #b0a898;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  flex-shrink:0;
+}
+.hud{position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 14px 8px;display:flex;justify-content:space-between;align-items:center;}
+.hud-title{font-size:13px;font-weight:600;color:#2e2418;background:rgba(255,255,255,.82);border-radius:10px;padding:3px 10px;}
+.hud-res{display:flex;gap:6px;}
+.res-pill{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.82);border-radius:20px;padding:3px 9px;font-size:12px;}
+.gd{width:8px;height:8px;border-radius:50%;background:#7090ff;display:inline-block;flex-shrink:0;}
+.pd{width:8px;height:8px;border-radius:50%;background:#c0a060;display:inline-block;flex-shrink:0;}
 
-.fac-card{background:#fff8ee;border-bottom:0.5px solid #c8bca8;padding:10px;display:grid;grid-template-columns:90px 1fr;gap:0;}
+.sel-banner{position:absolute;top:42px;left:0;right:0;z-index:9;display:flex;justify-content:space-between;align-items:center;padding:4px 12px;}
+.sel-pill{background:rgba(255,255,255,.88);border-radius:10px;padding:3px 10px;font-size:11px;font-weight:500;color:#2e2418;}
+.sel-uses{background:rgba(255,255,255,.88);border-radius:10px;padding:3px 10px;font-size:11px;color:#2e2418;}
 
-.fac-img-col{display:flex;flex-direction:column;align-items:center;padding-right:8px;gap:6px;}
-.fac-img-box{width:76px;height:76px;border-radius:8px;background:#e8e0cc;border:0.5px solid #c0b49a;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
-.fac-alert-dot{position:absolute;top:-5px;left:-5px;width:14px;height:14px;border-radius:50%;background:#d4b800;border:2px solid #fff8ee;}
-.status-foot{display:flex;align-items:center;gap:4px;width:76px;}
-.status-badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:20px;white-space:nowrap;display:flex;align-items:center;gap:2px;flex-shrink:0;}
-.sb-active{background:#d4edda;color:#1a5c2a;}
-.sb-broken{background:#fde8e8;color:#8c1a1a;}
-.sb-repairing{background:#fff3cd;color:#7a5000;}
-.sb-demolishing{background:#fde8e8;color:#8c1a1a;}
-.sb-done{background:#d4edda;color:#1a5c2a;}
-.use-count{font-size:9px;color:#5a5048;white-space:nowrap;}
+.world{flex:1 1 0;min-height:0;overflow:hidden;position:relative;}
+.world-bg{position:absolute;inset:0;background:linear-gradient(150deg,#b8e090 0%,#a0d070 60%,#90c060 100%);}
+.world-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(60,140,20,.12) 1px,transparent 1px);background-size:18px 18px;}
 
-.fac-right{display:flex;flex-direction:column;gap:0;}
-.row1{display:flex;align-items:center;gap:4px;padding-bottom:5px;border-bottom:0.5px solid #e0d8c8;}
-.fac-name{font-size:13px;font-weight:500;color:#2e2418;flex:1;}
-.fac-lv{font-size:11px;color:#7a6e5a;flex-shrink:0;}
-.trash-btn{width:26px;height:26px;border-radius:6px;border:0.5px solid #c8bca8;background:#f5efe3;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#7a6e5a;font-size:13px;flex-shrink:0;}
-.trash-btn:hover{background:#ece0cc;}
+.tile{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+.tile:hover .tile-body{filter:brightness(1.08);}
+.tile-body{border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;box-shadow:0 3px 8px rgba(0,0,0,.22);}
+.tile-label{font-size:9px;color:#2e2418;background:rgba(255,255,255,.75);border-radius:8px;padding:1px 5px;margin-top:3px;white-space:nowrap;}
+.tile.sel .tile-body{box-shadow:0 0 0 3px #2196f3,0 3px 8px rgba(0,0,0,.22);}
+.badge-bubble{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#e03030;color:#fff;font-size:8px;border-radius:6px;padding:1px 5px;white-space:nowrap;z-index:2;}
+.badge-bubble::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:3px solid transparent;border-top-color:#e03030;}
+.badge-repair{background:#e8a020;}
+.badge-repair::after{border-top-color:#e8a020;}
+.tile-body.broken{filter:grayscale(.55);}
+.tile-body.repairing{filter:grayscale(.5);}
+.tile-label.broken,.tile-label.repairing{color:#888;}
 
-.row2{padding:5px 0;font-size:11px;color:#7a6e5a;line-height:1.4;border-bottom:0.5px solid #e0d8c8;}
+.panel{background:#fff8ee;border-top:0.5px solid #c8bca8;flex:0 0 auto;}
+.panel-empty{padding:14px;text-align:center;font-size:11px;color:#a09080;}
+.pinner{padding:10px 12px 8px;display:flex;flex-direction:column;gap:7px;}
 
-.row3{padding:5px 0;border-bottom:0.5px solid #e0d8c8;display:flex;gap:6px;min-height:40px;align-items:stretch;}
-.stat-box{flex:1;background:#f5f0e4;border-radius:6px;padding:4px 6px;display:flex;align-items:center;gap:5px;}
-.stat-val{font-size:16px;font-weight:500;color:#2e2418;}
-.stat-label{font-size:9px;color:#8a7e6a;line-height:1.3;}
-.stat-delta-p{font-size:12px;font-weight:500;color:#1a6c2a;}
-.stat-delta-m{font-size:12px;font-weight:500;color:#8c1a1a;}
+.lv-row{display:flex;align-items:center;gap:7px;}
+.lv-tag{font-size:10px;font-weight:600;color:#fff;background:#2a9c4a;border-radius:6px;padding:1px 7px;white-space:nowrap;}
+.lv-track{flex:1;height:6px;background:#e0d8c8;border-radius:3px;overflow:hidden;}
+.lv-fill{height:100%;background:#2a9c4a;border-radius:3px;}
+.lv-max{font-size:9px;color:#a09080;}
 
-.repair-btn{flex:1;background:#2a9c4a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;}
-.repair-btn:hover{background:#1a8c3a;}
-.timer-box{flex:1;background:#e8a020;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#fff;}
-.timer-box.demo{background:#c03020;}
+.stats-row{display:flex;gap:5px;}
+.sbox{flex:1;background:#f5f0e4;border-radius:7px;padding:5px 5px 4px;display:flex;flex-direction:column;gap:2px;}
+.sbox-top{display:flex;align-items:center;gap:3px;}
+.sbox-icon{font-size:13px;}
+.sbox-label{font-size:8px;color:#8a7e6a;}
+.sbox-val{font-size:15px;font-weight:600;color:#2e2418;line-height:1.1;}
+.dp{font-size:11px;font-weight:500;color:#1a6c2a;}
+.dm{font-size:11px;font-weight:500;color:#8c1a1a;}
+.ptrack{height:3px;background:#e0d8c8;border-radius:2px;overflow:hidden;}
+.pfill-u{height:100%;background:#2196f3;border-radius:2px;}
+.pfill-r{height:100%;background:#e8a020;border-radius:2px;}
+.pfill-h{height:100%;background:#e84090;border-radius:2px;}
 
-/* 어두운 오버레이 (철거/즉시수리 확인) */
-.dark-overlay{background:#1c1810;border-radius:6px;flex:1;padding:7px 8px;color:#f0ebe0;display:flex;flex-direction:column;gap:4px;}
-.ov-title{font-size:10px;color:#a09080;line-height:1.3;}
-.ov-main{font-size:12px;font-weight:500;line-height:1.4;}
-.ov-sub{display:flex;gap:4px;align-items:center;font-size:12px;color:#a09080;}
-.ov-time{font-size:13px;font-weight:500;color:#e8a020;background:#2e2418;border-radius:4px;padding:2px 6px;}
+.repair-choice{display:flex;gap:6px;}
+.btn-repair{flex:1;background:#2a9c4a;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;}
+.btn-demo-s{flex:1;background:#f0ebe0;color:#5a4020;border:0.5px solid #c8bca8;border-radius:7px;padding:7px 0;font-size:11px;cursor:pointer;}
 
-.row4{padding-top:6px;display:flex;gap:6px;align-items:center;}
-.goto-btn{background:#2196f3;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.goto-btn:hover{background:#1976d2;}
-.upgrade-btn{flex:1;background:#e8e0cc;border:none;border-radius:6px;padding:5px 0;font-size:11px;color:#2e2418;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:500;}
-.upgrade-btn:hover{background:#d8c8b0;}
-.cancel-btn{flex:1;background:#cc2222;color:#fff;border:none;border-radius:6px;padding:5px 0;font-size:11px;cursor:pointer;font-weight:500;}
-.cancel-btn:hover{background:#aa1818;}
-.confirm-btn{flex:1;background:#e8e0cc;border:none;border-radius:6px;padding:5px 0;font-size:11px;color:#2e2418;cursor:pointer;font-weight:500;display:flex;align-items:center;justify-content:center;gap:3px;}
-.collect-btn{flex:1;border:none;border-radius:6px;padding:5px 0;font-size:11px;cursor:pointer;font-weight:500;}
-.collect-repair{background:#d4edda;color:#1a5c2a;}
-.collect-demo{background:#e8e0cc;color:#5a4020;}
-.done-box{flex:1;border-radius:6px;display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:11px;font-weight:500;}
-.done-repair{background:#d4edda;color:#1a5c2a;}
-.done-demo{background:#e8e0cc;color:#5a4020;}
+.repair-bar{background:#fff3cd;border-radius:7px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;}
+.repair-time-label{font-size:9px;color:#7a5000;margin-bottom:1px;}
+.repair-timer{font-size:15px;font-weight:600;color:#7a5000;}
+.btn-skip{background:#e8a020;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;}
 
-.fac-list{padding:10px 10px 16px;}
-.list-lbl{font-size:10px;color:#7a6e5a;margin-bottom:6px;font-weight:500;}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
-.cell{border-radius:8px;border:0.5px solid #c8bca8;background:#fff8ee;padding:7px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;transition:background .12s;}
-.cell:hover{background:#ece0cc;}
-.cell.sel{border:1.5px solid #2e2418;background:#ece0cc;}
-.cell-img{font-size:22px;}
-.cell-name{font-size:9px;color:#2e2418;text-align:center;line-height:1.2;}
-.cell-dot{width:7px;height:7px;border-radius:50%;}
-.d-active{background:#2a9c4a;} .d-broken{background:#e03030;} .d-timer{background:#d4a000;} .d-done{background:#2a9c4a;}
-.cell-alert{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#d4b800;border:1.5px solid #f0ebe0;}
-.toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,.9);color:#f0ebe0;padding:8px 18px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;z-index:99;}
+.btn-upg{width:100%;background:#2a9c4a;color:#fff;border:none;border-radius:7px;padding:8px 0;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.upg-row{display:flex;gap:6px;}
+.btn-cancel-s{background:#cc2222;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;}
+.btn-confirm-s{flex:1;background:#1a6c2a;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
+
+.mgmt-board{background:#f5f0e4;border-radius:7px;padding:7px 8px;}
+.mgmt-row{display:flex;}
+.mgmt-col{flex:1;}
+.mgmt-col-title{font-size:9px;font-weight:600;color:#7a6e5a;margin-bottom:4px;padding-bottom:2px;border-bottom:0.5px solid #e0d8c8;}
+.mgmt-item{display:flex;justify-content:space-between;padding:2px 0;font-size:10px;}
+.mgmt-item-name{color:#5a4830;}
+.mgmt-item-val{font-weight:500;}
+.mgmt-item-red{color:#e03030;}
+.mgmt-item-org{color:#c07010;}
+.mgmt-divider{width:0.5px;background:#e0d8c8;margin:0 8px;}
+.btn-catalog{width:100%;background:#2196f3;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;}
+
+.bottom-row{display:flex;justify-content:space-between;align-items:center;padding-top:2px;}
+.btn-x{width:34px;height:34px;border-radius:50%;border:0.5px solid #c8bca8;background:#f0ebe0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#5a5048;}
+.btn-trash{width:30px;height:30px;border-radius:7px;border:0.5px solid #c8bca8;background:#f0ebe0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;}
+.btn-trash:hover{background:#fde8e8;}
+
+.demo-overlay{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;border-radius:28px;z-index:30;}
+.demo-sheet{background:#1c1810;width:100%;border-radius:16px 16px 0 0;padding:18px 16px 22px;color:#f0ebe0;}
+.demo-sheet-title{font-size:14px;font-weight:600;margin-bottom:12px;}
+.demo-arrow-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.demo-bldg{font-size:12px;color:#d0c8b8;}
+.demo-arrow{font-size:18px;color:#808080;}
+.demo-reward{display:flex;align-items:center;gap:5px;font-size:16px;font-weight:700;}
+.demo-note{font-size:11px;color:#a09080;margin-bottom:16px;line-height:1.5;}
+.demo-btn-row{display:flex;gap:8px;}
+.btn-demo-cancel{flex:1;background:#3a3028;color:#f0ebe0;border:none;border-radius:8px;padding:11px 0;font-size:13px;cursor:pointer;}
+.btn-demo-go{flex:1;background:#f0c040;color:#1c1810;border:none;border-radius:8px;padding:11px 0;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+
+.toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,.9);color:#f0ebe0;padding:7px 16px;border-radius:20px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;z-index:50;}
 .toast.show{opacity:1;}
 </style>
 
-<div class="wrap">
+<div class="root">
 <div class="phone" id="app">
-<div class="hud">
-  <div style="font-size:12px;color:#a09080;cursor:pointer;" onclick="showToast('뒤로가기')"><i class="ti ti-arrow-left" style="font-size:14px" aria-hidden="true"></i></div>
-  <div class="hud-title">관리사무소</div>
-  <div class="hud-res">
-    <div style="display:flex;align-items:center;gap:3px;"><div class="cd"></div><span id="coins">12,400</span></div>
-    <div style="display:flex;align-items:center;gap:3px;"><div class="gd"></div><span id="gems-disp">88</span></div>
+  <div class="hud">
+    <div class="hud-title">관리 모드</div>
+    <div class="hud-res">
+      <div class="res-pill"><div class="gd"></div><span id="gems-d">88</span></div>
+      <div class="res-pill"><div class="pd"></div><span id="parts-d">24</span></div>
+    </div>
   </div>
+  <div class="sel-banner">
+    <div class="sel-pill" id="sel-pill">관리할 건물을 선택하세요.</div>
+    <div class="sel-uses" id="sel-uses" style="display:none;"></div>
+  </div>
+  <div class="world" id="world">
+    <div class="world-bg"></div>
+    <div class="tile" id="t0" style="left:50px;top:70px;" onclick="selectTile(0,event)">
+      <div class="tile-body" style="width:72px;height:72px;background:#e8d8b0;border:2px solid #c4a870;">🗼</div>
+      <div class="tile-label">캣타워</div>
+    </div>
+    <div class="tile" id="t1" style="left:230px;top:55px;" onclick="selectTile(1,event)">
+      <div class="badge-bubble">수리 필요</div>
+      <div class="tile-body broken" style="width:66px;height:66px;background:#d0c8b8;border:2px solid #a09080;">🍚</div>
+      <div class="tile-label broken">급식소</div>
+    </div>
+    <div class="tile" id="t2" style="left:245px;top:185px;" onclick="selectTile(2,event)">
+      <div class="badge-bubble badge-repair">수리중</div>
+      <div class="tile-body repairing" style="width:62px;height:62px;background:#d0c8b8;border:2px solid #a09080;">🌱</div>
+      <div class="tile-label repairing">텃밭</div>
+    </div>
+    <div class="tile" id="t3" style="left:130px;top:195px;" onclick="selectTile(3,event)">
+      <div class="tile-body" style="width:66px;height:66px;background:#c8d8f0;border:2px solid #8090c0;">🏢</div>
+      <div class="tile-label">관리사무소</div>
+    </div>
+  </div>
+  <div class="panel" id="panel">
+    <div class="panel-empty">건물을 선택하면 정보가 표시됩니다.</div>
+  </div>
+  <div class="demo-overlay" id="demo-ov" style="display:none;">
+    <div class="demo-sheet">
+      <div class="demo-sheet-title">철거하기</div>
+      <div class="demo-arrow-row">
+        <div class="demo-bldg" id="dov-bldg"></div>
+        <div class="demo-arrow">➜</div>
+        <div class="demo-reward"><div class="pd" style="width:12px;height:12px;"></div><span id="dov-mat"></span></div>
+      </div>
+      <div class="demo-note" id="dov-note"></div>
+      <div class="demo-btn-row">
+        <button class="btn-demo-cancel" onclick="closeDemoOv()">취소</button>
+        <button class="btn-demo-go" onclick="doDemo()"><div class="pd" style="width:10px;height:10px;"></div><span id="dov-mat2"></span></button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast-el"></div>
 </div>
-<div class="fac-card" id="fac-card"></div>
-<div class="fac-list">
-  <div class="list-lbl">보유 시설물</div>
-  <div class="grid" id="grid"></div>
 </div>
-</div>
-</div>
-<div class="toast" id="toast-el"></div>
 
 <script>
-const FAC=[
-  {id:0,name:'캣타워',icon:'🗼',status:'active',uses:[22,50],level:3,desc:'고양이들이 올라가며 행복도를 얻습니다.',repairMin:50,alert:false},
-  {id:1,name:'급식소',icon:'🍚',status:'broken',uses:[0,50],level:2,desc:'6시간마다 새 고양이가 방문합니다.',repairMin:50,alert:true},
-  {id:2,name:'놀이터',icon:'🎠',status:'repairing',uses:[22,50],level:4,desc:'고양이가 놀며 행복도를 얻습니다.',repairMin:50,alert:false,timerSec:2999},
-  {id:3,name:'햇빛 테라스',icon:'☀️',status:'active',uses:[38,50],level:1,desc:'고양이가 낮잠을 잡니다.',repairMin:50,alert:false},
-  {id:4,name:'낚시터',icon:'🎣',status:'demolishing',uses:[0,50],level:2,desc:'수리 또는 철거를 선택하세요.',repairMin:50,alert:true,timerSec:59},
-  {id:5,name:'미용실',icon:'✂️',status:'active',uses:[10,50],level:1,desc:'코스튬 아이템을 만듭니다.',repairMin:50,alert:false},
-  {id:6,name:'병원',icon:'🏥',status:'active',uses:[45,50],level:5,desc:'고양이 건강을 관리합니다.',repairMin:50,alert:false},
-  {id:7,name:'텃밭',icon:'🌱',status:'active',uses:[20,50],level:2,desc:'재료를 생산합니다.',repairMin:50,alert:false},
+let gems=88,parts=24;
+const TILES=[
+  {id:0,name:'캣타워',icon:'🗼',type:'finite',status:'active',level:3,maxLevel:20,uses:23,maxUses:50,repairMin:30,happy:5,repairCostBase:10},
+  {id:1,name:'급식소',icon:'🍚',type:'finite',status:'broken',level:2,maxLevel:20,uses:0,maxUses:40,repairMin:40,happy:4,repairCostBase:8},
+  {id:2,name:'텃밭',icon:'🌱',type:'finite',status:'repairing',level:5,maxLevel:20,uses:0,maxUses:60,repairMin:25,happy:6,timerSec:2033,repairCostBase:12},
+  {id:3,name:'관리사무소',icon:'🏢',type:'infinite',status:'active',level:1,maxLevel:1,uses:Infinity,maxUses:Infinity,repairMin:null,happy:null,repairCostBase:0},
 ];
-let sel=0,gems=88;
-let mode='normal'; /* normal | upgrade | demo | instant_repair */
-const timers={};
-
-function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+let selId=null,upgPreview=false,repairTicks={};
 
 function startTick(id){
-  if(timers[id]) return;
-  timers[id]=setInterval(()=>{
-    const f=FAC[id];if(!f){clearInterval(timers[id]);delete timers[id];return;}
-    f.timerSec=Math.max(0,(f.timerSec||0)-1);
-    if(f.timerSec===0){
-      clearInterval(timers[id]);delete timers[id];
-      f.status=f.status==='repairing'?'done_repair':'done_demo';
-      f.alert=true;
+  if(repairTicks[id])return;
+  repairTicks[id]=setInterval(()=>{
+    const t=TILES[id];
+    if(!t||t.status!=='repairing'){clearInterval(repairTicks[id]);return;}
+    t.timerSec=Math.max(0,t.timerSec-1);
+    if(t.timerSec===0){
+      clearInterval(repairTicks[id]);delete repairTicks[id];
+      t.status='active';t.uses=t.maxUses;
+      const b=document.getElementById('t'+id).querySelector('.badge-bubble');if(b)b.remove();
+      document.getElementById('t'+id).querySelector('.tile-body').className='tile-body';
+      document.getElementById('t'+id).querySelector('.tile-label').className='tile-label';
+      showToast(t.name+' 수리 완료!');
     }
-    renderGrid();if(sel===id)renderCard();
+    if(selId===id)renderPanel();
   },1000);
 }
-FAC.forEach(f=>{if(f.status==='repairing'||f.status==='demolishing')startTick(f.id);});
+startTick(2);
 
-function dotClass(s){
-  if(s==='active')return 'd-active';
-  if(s==='broken')return 'd-broken';
-  if(s==='done_repair'||s==='done_demo')return 'd-done';
-  return 'd-timer';
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function matCalc(t){return Math.max(1,Math.round(50*t.level*0.1*t.level));}
+
+function selectTile(id,e){
+  if(e)e.stopPropagation();
+  upgPreview=false;selId=id;
+  document.querySelectorAll('.tile').forEach((el,i)=>el.classList.toggle('sel',i===id));
+  const t=TILES[id];
+  document.getElementById('sel-pill').textContent=t.name;
+  const u=document.getElementById('sel-uses');u.style.display='';
+  u.innerHTML=t.type==='infinite'
+    ?'이용 횟수 <b style="color:#2196f3;">∞</b>'
+    :'남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
+  renderPanel();
 }
-function badgeCls(s){
-  const m={active:'sb-active',broken:'sb-broken',repairing:'sb-repairing',demolishing:'sb-demolishing',done_repair:'sb-done',done_demo:'sb-done'};
-  return m[s]||'sb-active';
+document.getElementById('world').addEventListener('click',e=>{
+  if(e.target.id==='world'||e.target.classList.contains('world-bg'))deselect();
+});
+function deselect(){
+  selId=null;upgPreview=false;
+  document.querySelectorAll('.tile').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('sel-pill').textContent='관리할 건물을 선택하세요.';
+  document.getElementById('sel-uses').style.display='none';
+  renderPanel();
 }
-function badgeLabel(s){
-  const m={active:'가동중',broken:'수리 필요',repairing:'수리중',demolishing:'철거중',done_repair:'수리 완료',done_demo:'공사 완료'};
-  return m[s]||'가동중';
-}
-function badgeIcon(s){
-  if(s==='active')return '<i class="ti ti-circle-check" style="font-size:10px;" aria-hidden="true"></i>';
-  if(s==='broken')return '<i class="ti ti-tool" style="font-size:10px;" aria-hidden="true"></i>';
-  if(s==='repairing'||s==='demolishing')return '<span style="font-size:9px;">🚧</span>';
-  if(s==='done_repair'||s==='done_demo')return '<i class="ti ti-circle-check" style="font-size:10px;" aria-hidden="true"></i>';
-  return '';
-}
-
-function renderCard(){
-  const f=FAC[sel];if(!f){document.getElementById('fac-card').innerHTML='';return;}
-  const s=f.status;
-
-  const imgCol=`
-    <div class="fac-img-col">
-      <div class="fac-img-box">
-        ${f.alert?'<div class="fac-alert-dot"></div>':''}
-        ${f.icon}
-      </div>
-      <div class="status-foot">
-        <span class="status-badge ${badgeCls(s)}">${badgeIcon(s)} ${badgeLabel(s)}</span>
-        <span class="use-count">${f.uses[0]}/${f.uses[1]}</span>
-      </div>
-    </div>`;
-
-  let row3='',row4='';
-
-  if(mode==='upgrade'){
-    /* 업그레이드 미리보기 */
-    row3=`
-      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}<span class="stat-delta-p">+5</span></div></div>
-      </div>
-      <div class="stat-box"><i class="ti ti-clock" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">수리 시간 (분)</div><div class="stat-val">${f.repairMin}<span class="stat-delta-m">-5</span></div></div>
-      </div>`;
-    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
-          <button class="confirm-btn" onclick="doUpgrade()"><div class="gd"></div>확인 ${(f.level+1)*10}</button>`;
-
-  } else if(mode==='demo'){
-    /* 철거 확인 오버레이 */
-    row3=`<div class="dark-overlay">
-      <div class="ov-title">시설을 철거하시겠습니까?<br>${f.desc.slice(0,12)}...</div>
-      <div class="ov-main"><i class="ti ti-settings" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> 0 ~ ${f.uses[1]} 을 획득합니다.</div>
-      <div class="ov-sub"><div class="gd"></div>${Math.round(f.uses[1]*0.5)}<div class="gd" style="margin-left:6px;"></div>${Math.round(f.uses[1]*0.5)}</div>
-    </div>`;
-    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
-          <button class="confirm-btn" onclick="doDemo()"><div class="gd"></div>철거하기 ${Math.round(f.uses[1]*0.5)}</button>`;
-
-  } else if(mode==='instant_repair'){
-    /* 즉시 수리 확인 오버레이 */
-    row3=`<div class="dark-overlay">
-      <div class="ov-title">즉시 수리하시겠습니까?<br>${f.desc.slice(0,12)}...</div>
-      <div class="ov-main">이용 횟수 ${f.uses[1]}회 즉시 충전</div>
-      <div class="ov-sub"><div class="gd"></div>${Math.round(f.uses[1]*0.5)}<span class="ov-time">${fmt(f.timerSec||0)}</span></div>
-    </div>`;
-    row4=`<button class="cancel-btn" onclick="setMode('normal')">그만두기</button>
-          <button class="confirm-btn" onclick="doInstantRepair()"><div class="gd"></div>수리하기 10</button>`;
-
-  } else if(s==='active'){
-    row3=`
-      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
-      </div>
-      <div class="stat-box"><i class="ti ti-clock" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">수리 시간 (분)</div><div class="stat-val">${f.repairMin}</div></div>
-      </div>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="upgrade-btn" onclick="setMode('upgrade')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>${(f.level+1)*10} 업그레이드</button>`;
-
-  } else if(s==='broken'){
-    row3=`
-      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
-      </div>
-      <button class="repair-btn" onclick="startRepair(${f.id})">수리하기</button>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="upgrade-btn" onclick="showToast('수리 후 업그레이드 가능합니다.')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>${(f.level+1)*10} 업그레이드</button>`;
-
-  } else if(s==='repairing'){
-    row3=`
-      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
-      </div>
-      <div class="timer-box">${fmt(f.timerSec||0)}</div>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="upgrade-btn" onclick="setMode('instant_repair')"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>업그레이드</button>`;
-
-  } else if(s==='demolishing'){
-    row3=`
-      <div class="stat-box"><i class="ti ti-tool" style="font-size:13px;color:#5a5048;" aria-hidden="true"></i>
-        <div><div class="stat-label">이용 횟수 (회)</div><div class="stat-val">${f.uses[1]}</div></div>
-      </div>
-      <div class="timer-box demo">${fmt(f.timerSec||0)}</div>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="upgrade-btn" onclick="doInstantDemo()"><i class="ti ti-diamond" style="font-size:12px;color:#5070dd;" aria-hidden="true"></i>단축</button>`;
-
-  } else if(s==='done_repair'){
-    row3=`<div class="done-box done-repair"><i class="ti ti-circle-check" style="font-size:14px;" aria-hidden="true"></i>수리 완료! 이용을 재개하세요.</div>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="collect-btn collect-repair" onclick="collectRepair(${f.id})">이용 재개</button>`;
-
-  } else if(s==='done_demo'){
-    row3=`<div class="done-box done-demo"><i class="ti ti-package" style="font-size:14px;" aria-hidden="true"></i>철거 완료! 재료를 획득하세요.</div>`;
-    row4=`<button class="goto-btn" onclick="showToast('월드로 이동')">바로가기</button>
-          <button class="collect-btn collect-demo" onclick="collectDemo(${f.id})">재료 획득</button>`;
+function renderPanel(){
+  const p=document.getElementById('panel');
+  if(selId===null){p.innerHTML='<div class="panel-empty">건물을 선택하면 정보가 표시됩니다.</div>';return;}
+  const t=TILES[selId];
+  if(t.type==='infinite'){renderMgmtPanel(p);return;}
+  const lvPct=Math.round((t.level/t.maxLevel)*100);
+  const repPct=t.repairMin!=null?Math.round(((50-t.repairMin)/30)*100):0;
+  const hapPct=t.happy!=null?Math.round(((t.happy-4)/3)*100):0;
+  const upCost=(t.level+1)*10;
+  const usesVal=upgPreview?`<div class="sbox-val">${t.maxUses}<span class="dp">+5</span></div>`:`<div class="sbox-val">${t.maxUses}</div>`;
+  const repVal=upgPreview?`<div class="sbox-val">${t.repairMin}<span class="dm">-2</span></div>`:`<div class="sbox-val">${t.repairMin}</div>`;
+  const hapVal=upgPreview?`<div class="sbox-val">${t.happy}<span class="dp">+1</span></div>`:`<div class="sbox-val">${t.happy}</div>`;
+  const stats=`<div class="stats-row">
+    <div class="sbox"><div class="sbox-top"><span class="sbox-icon">🔧</span><span class="sbox-label">이용 횟수 (회)</span></div>${usesVal}<div class="ptrack"><div class="pfill-u" style="width:${Math.round(t.maxUses)}%"></div></div></div>
+    ${t.repairMin!=null?`<div class="sbox"><div class="sbox-top"><span class="sbox-icon">⏱</span><span class="sbox-label">수리 시간 (분)</span></div>${repVal}<div class="ptrack"><div class="pfill-r" style="width:${repPct}%"></div></div></div>`:''}
+    ${t.happy!=null?`<div class="sbox"><div class="sbox-top"><span class="sbox-icon">❤️</span><span class="sbox-label">행복도 (%)</span></div>${hapVal}<div class="ptrack"><div class="pfill-h" style="width:${hapPct}%"></div></div></div>`:''}
+  </div>`;
+  let action='',br='';
+  if(t.status==='broken'){
+    action=`<div class="repair-choice"><button class="btn-repair" onclick="doStartRepair(${selId})">🔧 수리하기</button><button class="btn-demo-s" onclick="openDemoOv(${selId})">철거</button></div>`;
+    br=`<div class="btn-trash" onclick="openDemoOv(${selId})">🗑</div>`;
+  } else if(t.status==='repairing'){
+    const sc=Math.max(1,Math.ceil((t.timerSec/60+1)*2));
+    action=`<div class="repair-bar"><div><div class="repair-time-label">수리 완료까지 남은 시간</div><div class="repair-timer">${fmt(t.timerSec)}</div></div><button class="btn-skip" onclick="skipRepair(${selId},${sc})"><div class="gd"></div>${sc} 즉시완료</button></div>`;
+    br=`<div style="width:30px;"></div>`;
+  } else {
+    action=upgPreview
+      ?`<div class="upg-row"><button class="btn-cancel-s" onclick="upgPreview=false;renderPanel()">그만두기</button><button class="btn-confirm-s" onclick="doUpgrade(${selId})"><div class="gd"></div>확인 ${upCost}</button></div>`
+      :`<button class="btn-upg" onclick="upgPreview=true;renderPanel()"><div class="gd"></div>${upCost} 업그레이드</button>`;
+    br=`<div class="btn-trash" onclick="openDemoOv(${selId})">🗑</div>`;
   }
-
-  document.getElementById('fac-card').innerHTML=`
-    ${imgCol}
-    <div class="fac-right">
-      <div class="row1">
-        <span class="fac-name">${f.name}</span>
-        <span class="fac-lv">Lv.${f.level}</span>
-        <div class="trash-btn" onclick="setMode('demo')" aria-label="철거"><i class="ti ti-trash" style="font-size:13px;" aria-hidden="true"></i></div>
-      </div>
-      <div class="row2">${f.desc}</div>
-      <div class="row3">${row3}</div>
-      ${row4?`<div class="row4">${row4}</div>`:''}
-    </div>`;
+  p.innerHTML=`<div class="pinner">
+    <div class="lv-row"><div class="lv-tag">Level ${t.level}</div><div class="lv-track"><div class="lv-fill" style="width:${lvPct}%"></div></div><div class="lv-max">/ ${t.maxLevel}</div></div>
+    ${stats}${action}
+    <div class="bottom-row"><div class="btn-x" onclick="deselect()">✕</div><div style="font-size:10px;color:#a09080;">${t.name} Lv.${t.level}</div>${br}</div>
+  </div>`;
 }
-
-function renderGrid(){
-  document.getElementById('grid').innerHTML=FAC.map((f,i)=>`
-    <div class="cell${i===sel?' sel':''}" onclick="selectFac(${i})">
-      ${f.alert?'<div class="cell-alert"></div>':''}
-      <div class="cell-img">${f.icon}</div>
-      <div class="cell-name">${f.name}</div>
-      <div class="cell-dot ${dotClass(f.status)}"></div>
-    </div>`).join('');
+function renderMgmtPanel(p){
+  const active=TILES.filter(t=>t.type==='finite'&&t.status==='active');
+  const repairing=TILES.filter(t=>t.status==='repairing');
+  const broken=TILES.filter(t=>t.status==='broken');
+  const aR=active.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val">${t.uses}/${t.maxUses}</span></div>`).join('');
+  const bR=broken.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val mgmt-item-red">수리 필요</span></div>`).join('');
+  const rR=repairing.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val mgmt-item-org">${fmt(t.timerSec||0)}</span></div>`).join('');
+  p.innerHTML=`<div class="pinner">
+    <div class="mgmt-board"><div class="mgmt-row">
+      <div class="mgmt-col"><div class="mgmt-col-title">운영중</div>${aR||'<div style="font-size:10px;color:#a09080;padding:2px 0;">없음</div>'}${bR?`<div class="mgmt-col-title" style="margin-top:5px;">파손</div>${bR}`:''}</div>
+      <div class="mgmt-divider"></div>
+      <div class="mgmt-col"><div class="mgmt-col-title">수리중</div>${rR||'<div style="font-size:10px;color:#a09080;padding:2px 0;">없음</div>'}</div>
+    </div></div>
+    <button class="btn-catalog" onclick="showToast('건물 도감은 추후 구현 예정입니다.')">건물 도감 보기</button>
+    <div class="bottom-row"><div class="btn-x" onclick="deselect()">✕</div><div style="font-size:10px;color:#a09080;">관리사무소</div><div style="width:30px;"></div></div>
+  </div>`;
 }
-
-function selectFac(i){sel=i;mode='normal';renderGrid();renderCard();}
-function setMode(m){mode=m;renderCard();}
-
-function doUpgrade(){
-  const f=FAC[sel];const cost=(f.level+1)*10;
+function doStartRepair(id){
+  const t=TILES[id];t.status='repairing';t.timerSec=1800;
+  const el=document.getElementById('t'+id);
+  let b=el.querySelector('.badge-bubble');
+  if(!b){b=document.createElement('div');el.insertBefore(b,el.firstChild);}
+  b.className='badge-bubble badge-repair';b.textContent='수리중';
+  el.querySelector('.tile-body').className='tile-body repairing';
+  el.querySelector('.tile-label').className='tile-label repairing';
+  startTick(id);upgPreview=false;renderPanel();showToast(t.name+' 수리를 시작합니다!');
+}
+function skipRepair(id,cost){
   if(gems<cost){showToast('보석이 부족합니다.');return;}
-  gems-=cost;document.getElementById('gems-disp').textContent=gems;
-  f.level++;f.uses[1]+=5;f.repairMin=Math.max(5,f.repairMin-5);
-  mode='normal';showToast(`Lv.${f.level} 업그레이드 완료!`);renderGrid();renderCard();
+  gems-=cost;document.getElementById('gems-d').textContent=gems;
+  clearInterval(repairTicks[id]);delete repairTicks[id];
+  const t=TILES[id];t.status='active';t.uses=t.maxUses;t.timerSec=0;
+  const el=document.getElementById('t'+id);
+  const b=el.querySelector('.badge-bubble');if(b)b.remove();
+  el.querySelector('.tile-body').className='tile-body';
+  el.querySelector('.tile-label').className='tile-label';
+  document.getElementById('sel-uses').innerHTML='남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
+  upgPreview=false;renderPanel();showToast('즉시 수리 완료!');
 }
-function startRepair(id){
-  const f=FAC[id];f.status='repairing';f.timerSec=2999;f.alert=false;
-  startTick(id);mode='normal';showToast('수리를 시작합니다!');renderGrid();renderCard();
+function doUpgrade(id){
+  const t=TILES[id];const cost=(t.level+1)*10;
+  if(gems<cost){showToast('보석이 부족합니다.');return;}
+  gems-=cost;document.getElementById('gems-d').textContent=gems;
+  t.level++;t.maxUses=Math.min(t.maxUses+5,100);
+  if(t.repairMin!=null)t.repairMin=Math.max(t.repairMin-2,20);
+  if(t.happy!=null)t.happy=Math.min(t.happy+1,7);
+  upgPreview=false;
+  document.getElementById('sel-uses').innerHTML='남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
+  renderPanel();showToast('Lv.'+t.level+' 업그레이드 완료!');
 }
-function doInstantRepair(){
-  const cost=10;if(gems<cost){showToast('보석이 부족합니다.');return;}
-  gems-=cost;document.getElementById('gems-disp').textContent=gems;
-  const f=FAC[sel];
-  if(timers[f.id]){clearInterval(timers[f.id]);delete timers[f.id];}
-  f.status='done_repair';f.timerSec=0;f.alert=true;
-  mode='normal';showToast('즉시 수리 완료!');renderGrid();renderCard();
+function openDemoOv(id){
+  const t=TILES[id];const mat=matCalc(t);
+  document.getElementById('dov-bldg').textContent=t.name+' Lv.'+t.level;
+  document.getElementById('dov-mat').textContent=mat;
+  document.getElementById('dov-mat2').textContent=mat;
+  document.getElementById('dov-note').textContent='Lv.'+t.level+' '+t.name+' 철거 시 부품 '+mat+'개를 획득할 수 있어요!';
+  document.getElementById('demo-ov').style.display='flex';
 }
-function doInstantDemo(){
-  const cost=10;if(gems<cost){showToast('보석이 부족합니다.');return;}
-  gems-=cost;document.getElementById('gems-disp').textContent=gems;
-  const f=FAC[sel];
-  if(timers[f.id]){clearInterval(timers[f.id]);delete timers[f.id];}
-  f.status='done_demo';f.timerSec=0;f.alert=true;
-  mode='normal';showToast('즉시 완료!');renderGrid();renderCard();
-}
-function collectRepair(id){const f=FAC[id];f.status='active';f.uses=[f.uses[1],f.uses[1]];f.alert=false;mode='normal';showToast('이용을 재개합니다!');renderGrid();renderCard();}
-function collectDemo(id){FAC.splice(id,1);sel=Math.min(sel,FAC.length-1);mode='normal';showToast('재료를 획득했습니다!');renderGrid();renderCard();}
+function closeDemoOv(){document.getElementById('demo-ov').style.display='none';}
 function doDemo(){
-  const f=FAC[sel];f.status='demolishing';f.timerSec=59;f.alert=false;
-  mode='normal';startTick(f.id);showToast('철거를 시작합니다.');renderGrid();renderCard();
+  const t=TILES[selId];const mat=matCalc(t);
+  parts+=mat;document.getElementById('parts-d').textContent=parts;
+  document.getElementById('t'+selId).style.display='none';
+  TILES[selId].status='demolished';
+  closeDemoOv();deselect();showToast('철거 완료! 부품 '+mat+'개 획득.');
 }
-
-let toastTimer;
-function showToast(m){const t=document.getElementById('toast-el');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2000);}
-
-renderGrid();renderCard();
+let toastTm;
+function showToast(m){
+  const el=document.getElementById('toast-el');
+  el.textContent=m;el.classList.add('show');
+  clearTimeout(toastTm);toastTm=setTimeout(()=>el.classList.remove('show'),2500);
+}
 </script>

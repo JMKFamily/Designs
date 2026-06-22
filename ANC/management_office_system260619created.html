@@ -1,56 +1,44 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-.root{
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  width:100%;
-  padding:1.5rem 1rem;
-  background:var(--color-background-tertiary);
-}
-.phone{
-  width:360px;
-  height:700px;
-  max-height:700px;
-  overflow:hidden;
-  background:#c8e8b0;
-  border-radius:28px;
-  border:0.5px solid #b0a898;
-  display:flex;
-  flex-direction:column;
-  position:relative;
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-  flex-shrink:0;
-}
+.root{display:flex;justify-content:center;align-items:flex-start;width:100%;padding:1.5rem 1rem;background:var(--color-background-tertiary);}
+.phone{width:360px;height:700px;max-height:700px;overflow:hidden;background:#c8e8b0;border-radius:28px;border:0.5px solid #b0a898;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.18);flex-shrink:0;}
+
+/* HUD */
 .hud{position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 14px 8px;display:flex;justify-content:space-between;align-items:center;}
-.hud-title{font-size:13px;font-weight:600;color:#2e2418;background:rgba(255,255,255,.82);border-radius:10px;padding:3px 10px;}
-.hud-res{display:flex;gap:6px;}
-.res-pill{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.82);border-radius:20px;padding:3px 9px;font-size:12px;}
+.hud-title{font-size:13px;font-weight:600;color:#2e2418;background:rgba(255,255,255,.85);border-radius:10px;padding:3px 10px;}
+.hud-res{display:flex;gap:5px;}
+.res-pill{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.85);border-radius:20px;padding:3px 8px;font-size:12px;}
 .gd{width:8px;height:8px;border-radius:50%;background:#7090ff;display:inline-block;flex-shrink:0;}
 .pd{width:8px;height:8px;border-radius:50%;background:#c0a060;display:inline-block;flex-shrink:0;}
+.cd{width:8px;height:8px;border-radius:50%;background:#f0c040;display:inline-block;flex-shrink:0;}
 
+/* 선택 배너 */
 .sel-banner{position:absolute;top:42px;left:0;right:0;z-index:9;display:flex;justify-content:space-between;align-items:center;padding:4px 12px;}
 .sel-pill{background:rgba(255,255,255,.88);border-radius:10px;padding:3px 10px;font-size:11px;font-weight:500;color:#2e2418;}
 .sel-uses{background:rgba(255,255,255,.88);border-radius:10px;padding:3px 10px;font-size:11px;color:#2e2418;}
 
+/* 월드 */
 .world{flex:1 1 0;min-height:0;overflow:hidden;position:relative;}
 .world-bg{position:absolute;inset:0;background:linear-gradient(150deg,#b8e090 0%,#a0d070 60%,#90c060 100%);}
 .world-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(60,140,20,.12) 1px,transparent 1px);background-size:18px 18px;}
 
 .tile{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
-.tile:hover .tile-body{filter:brightness(1.08);}
-.tile-body{border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;box-shadow:0 3px 8px rgba(0,0,0,.22);}
-.tile-label{font-size:9px;color:#2e2418;background:rgba(255,255,255,.75);border-radius:8px;padding:1px 5px;margin-top:3px;white-space:nowrap;}
+.tile:hover .tile-body{filter:brightness(1.06);}
+.tile-body{border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;box-shadow:0 3px 8px rgba(0,0,0,.22);transition:box-shadow .15s;}
 .tile.sel .tile-body{box-shadow:0 0 0 3px #2196f3,0 3px 8px rgba(0,0,0,.22);}
-.badge-bubble{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#e03030;color:#fff;font-size:8px;border-radius:6px;padding:1px 5px;white-space:nowrap;z-index:2;}
-.badge-bubble::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:3px solid transparent;border-top-color:#e03030;}
-.badge-repair{background:#e8a020;}
-.badge-repair::after{border-top-color:#e8a020;}
-.tile-body.broken{filter:grayscale(.55);}
-.tile-body.repairing{filter:grayscale(.5);}
-.tile-label.broken,.tile-label.repairing{color:#888;}
+.tile-label{font-size:9px;color:#2e2418;background:rgba(255,255,255,.78);border-radius:8px;padding:1px 5px;margin-top:3px;white-space:nowrap;}
+.badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);color:#fff;font-size:8px;border-radius:6px;padding:1px 5px;white-space:nowrap;z-index:2;}
+.badge::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:3px solid transparent;}
+.badge-broken{background:#e03030;}.badge-broken::after{border-top-color:#e03030;}
+.badge-upgrading{background:#2196f3;}.badge-upgrading::after{border-top-color:#2196f3;}
+.tile-body.broken{filter:grayscale(.6);}
+.tile-body.upgrading{filter:brightness(.85);}
+.tile-label.broken,.tile-label.upgrading{color:#888;}
+/* 공사 펜스 오버레이 */
+.fence{position:absolute;inset:0;border-radius:8px;border:2px dashed #f0a000;background:rgba(240,160,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;}
 
+/* 패널 */
 .panel{background:#fff8ee;border-top:0.5px solid #c8bca8;flex:0 0 auto;}
 .panel-empty{padding:14px;text-align:center;font-size:11px;color:#a09080;}
 .pinner{padding:10px 12px 8px;display:flex;flex-direction:column;gap:7px;}
@@ -71,51 +59,74 @@
 .dm{font-size:11px;font-weight:500;color:#8c1a1a;}
 .ptrack{height:3px;background:#e0d8c8;border-radius:2px;overflow:hidden;}
 .pfill-u{height:100%;background:#2196f3;border-radius:2px;}
-.pfill-r{height:100%;background:#e8a020;border-radius:2px;}
 .pfill-h{height:100%;background:#e84090;border-radius:2px;}
 
-.repair-choice{display:flex;gap:6px;}
-.btn-repair{flex:1;background:#2a9c4a;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;}
-.btn-demo-s{flex:1;background:#f0ebe0;color:#5a4020;border:0.5px solid #c8bca8;border-radius:7px;padding:7px 0;font-size:11px;cursor:pointer;}
-
-.repair-bar{background:#fff3cd;border-radius:7px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;}
-.repair-time-label{font-size:9px;color:#7a5000;margin-bottom:1px;}
-.repair-timer{font-size:15px;font-weight:600;color:#7a5000;}
-.btn-skip{background:#e8a020;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;}
-
+/* 업그레이드 버튼들 */
 .btn-upg{width:100%;background:#2a9c4a;color:#fff;border:none;border-radius:7px;padding:8px 0;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn-upg:hover{background:#1a8c3a;}
+.btn-upg.coin{background:#d4a010;}
+.btn-upg.coin:hover{background:#b48000;}
 .upg-row{display:flex;gap:6px;}
 .btn-cancel-s{background:#cc2222;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;}
 .btn-confirm-s{flex:1;background:#1a6c2a;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
+.btn-confirm-s.coin{background:#b48000;}
 
-.mgmt-board{background:#f5f0e4;border-radius:7px;padding:7px 8px;}
-.mgmt-row{display:flex;}
-.mgmt-col{flex:1;}
-.mgmt-col-title{font-size:9px;font-weight:600;color:#7a6e5a;margin-bottom:4px;padding-bottom:2px;border-bottom:0.5px solid #e0d8c8;}
-.mgmt-item{display:flex;justify-content:space-between;padding:2px 0;font-size:10px;}
-.mgmt-item-name{color:#5a4830;}
-.mgmt-item-val{font-weight:500;}
-.mgmt-item-red{color:#e03030;}
-.mgmt-item-org{color:#c07010;}
-.mgmt-divider{width:0.5px;background:#e0d8c8;margin:0 8px;}
+/* 업그레이드 타이머 바 */
+.upg-bar{background:#e8f4ff;border-radius:7px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.upg-bar-info{display:flex;flex-direction:column;gap:1px;}
+.upg-bar-label{font-size:9px;color:#1a5c8a;}
+.upg-bar-timer{font-size:15px;font-weight:600;color:#1a5c8a;}
+.btn-skip-upg{background:#2196f3;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+
+/* 두더지 장인 슬롯 표시 */
+.mole-slots{display:flex;align-items:center;gap:5px;font-size:10px;color:#7a6e5a;}
+.mole-icon{font-size:14px;}
+.slot-pip{width:10px;height:10px;border-radius:50%;border:1.5px solid #a09080;background:#f0ebe0;}
+.slot-pip.active{background:#2a9c4a;border-color:#1a7c3a;}
+.slot-pip.busy{background:#2196f3;border-color:#1a6caa;}
+
+/* 두더지 공방 현황판 */
+.workshop-board{background:#f5f0e4;border-radius:7px;padding:7px 8px;display:flex;flex-direction:column;gap:4px;}
+.wb-title{font-size:9px;font-weight:600;color:#7a6e5a;border-bottom:0.5px solid #e0d8c8;padding-bottom:3px;margin-bottom:2px;}
+.wb-item{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:10px;cursor:pointer;border-radius:4px;}
+.wb-item:hover{background:#ece0cc;padding:3px 4px;margin:0 -4px;}
+.wb-item-name{color:#3a2e20;font-weight:500;}
+.wb-item-time{color:#2196f3;font-weight:600;}
+.wb-empty{font-size:10px;color:#a09080;text-align:center;padding:4px 0;}
 .btn-catalog{width:100%;background:#2196f3;color:#fff;border:none;border-radius:7px;padding:7px 0;font-size:11px;font-weight:600;cursor:pointer;}
+
+/* 파손 안내 */
+.broken-notice{background:#fdecea;border-radius:7px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;}
+.broken-notice-text{font-size:11px;color:#8c1a1a;line-height:1.4;}
+.btn-instant-repair{background:#e03030;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-instant-repair:hover{background:#c02020;}
 
 .bottom-row{display:flex;justify-content:space-between;align-items:center;padding-top:2px;}
 .btn-x{width:34px;height:34px;border-radius:50%;border:0.5px solid #c8bca8;background:#f0ebe0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#5a5048;}
+.btn-x:hover{background:#e0d8c8;}
 .btn-trash{width:30px;height:30px;border-radius:7px;border:0.5px solid #c8bca8;background:#f0ebe0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;}
 .btn-trash:hover{background:#fde8e8;}
 
+/* 철거 오버레이 */
 .demo-overlay{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;border-radius:28px;z-index:30;}
 .demo-sheet{background:#1c1810;width:100%;border-radius:16px 16px 0 0;padding:18px 16px 22px;color:#f0ebe0;}
 .demo-sheet-title{font-size:14px;font-weight:600;margin-bottom:12px;}
-.demo-arrow-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.demo-arrow-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
 .demo-bldg{font-size:12px;color:#d0c8b8;}
-.demo-arrow{font-size:18px;color:#808080;}
-.demo-reward{display:flex;align-items:center;gap:5px;font-size:16px;font-weight:700;}
+.demo-reward{display:flex;align-items:center;gap:5px;font-size:18px;font-weight:700;}
 .demo-note{font-size:11px;color:#a09080;margin-bottom:16px;line-height:1.5;}
 .demo-btn-row{display:flex;gap:8px;}
 .btn-demo-cancel{flex:1;background:#3a3028;color:#f0ebe0;border:none;border-radius:8px;padding:11px 0;font-size:13px;cursor:pointer;}
 .btn-demo-go{flex:1;background:#f0c040;color:#1c1810;border:none;border-radius:8px;padding:11px 0;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+
+/* 장인 초과 모달 */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;border-radius:28px;z-index:40;}
+.modal-box{background:#fff8ee;border-radius:14px;padding:18px 16px;width:280px;border:0.5px solid #c8bca8;}
+.modal-title{font-size:14px;font-weight:600;color:#2e2418;margin-bottom:6px;}
+.modal-body{font-size:11px;color:#7a6e5a;line-height:1.6;margin-bottom:14px;}
+.modal-btns{display:flex;gap:8px;}
+.modal-cancel{flex:1;background:#f0ebe0;color:#5a4020;border:0.5px solid #c8bca8;border-radius:8px;padding:9px 0;font-size:12px;cursor:pointer;}
+.modal-go{flex:1;background:#2196f3;color:#fff;border:none;border-radius:8px;padding:9px 0;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
 
 .toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,.9);color:#f0ebe0;padding:7px 16px;border-radius:20px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;z-index:50;}
 .toast.show{opacity:1;}
@@ -124,8 +135,9 @@
 <div class="root">
 <div class="phone" id="app">
   <div class="hud">
-    <div class="hud-title">관리 모드</div>
+    <div class="hud-title">두더지 공방</div>
     <div class="hud-res">
+      <div class="res-pill"><div class="cd"></div><span id="coins-d">1240</span></div>
       <div class="res-pill"><div class="gd"></div><span id="gems-d">88</span></div>
       <div class="res-pill"><div class="pd"></div><span id="parts-d">24</span></div>
     </div>
@@ -134,37 +146,48 @@
     <div class="sel-pill" id="sel-pill">관리할 건물을 선택하세요.</div>
     <div class="sel-uses" id="sel-uses" style="display:none;"></div>
   </div>
+
   <div class="world" id="world">
     <div class="world-bg"></div>
+    <!-- 캣타워: 가동중 -->
     <div class="tile" id="t0" style="left:50px;top:70px;" onclick="selectTile(0,event)">
       <div class="tile-body" style="width:72px;height:72px;background:#e8d8b0;border:2px solid #c4a870;">🗼</div>
       <div class="tile-label">캣타워</div>
     </div>
+    <!-- 급식소: 파손 -->
     <div class="tile" id="t1" style="left:230px;top:55px;" onclick="selectTile(1,event)">
-      <div class="badge-bubble">수리 필요</div>
+      <div class="badge badge-broken">수리 필요</div>
       <div class="tile-body broken" style="width:66px;height:66px;background:#d0c8b8;border:2px solid #a09080;">🍚</div>
       <div class="tile-label broken">급식소</div>
     </div>
+    <!-- 텃밭: 업그레이드 중 -->
     <div class="tile" id="t2" style="left:245px;top:185px;" onclick="selectTile(2,event)">
-      <div class="badge-bubble badge-repair">수리중</div>
-      <div class="tile-body repairing" style="width:62px;height:62px;background:#d0c8b8;border:2px solid #a09080;">🌱</div>
-      <div class="tile-label repairing">텃밭</div>
+      <div class="badge badge-upgrading">업그레이드 중</div>
+      <div class="tile-body upgrading" style="width:62px;height:62px;background:#d0c8b8;border:2px solid #a09080;">
+        🌱
+        <div class="fence">🦔</div>
+      </div>
+      <div class="tile-label upgrading">텃밭</div>
     </div>
+    <!-- 두더지 공방 -->
     <div class="tile" id="t3" style="left:130px;top:195px;" onclick="selectTile(3,event)">
-      <div class="tile-body" style="width:66px;height:66px;background:#c8d8f0;border:2px solid #8090c0;">🏢</div>
-      <div class="tile-label">관리사무소</div>
+      <div class="tile-body" style="width:66px;height:66px;background:#d8c8f0;border:2px solid #9070c0;">🦔</div>
+      <div class="tile-label">두더지 공방</div>
     </div>
   </div>
+
   <div class="panel" id="panel">
     <div class="panel-empty">건물을 선택하면 정보가 표시됩니다.</div>
   </div>
+
+  <!-- 철거 오버레이 -->
   <div class="demo-overlay" id="demo-ov" style="display:none;">
     <div class="demo-sheet">
       <div class="demo-sheet-title">철거하기</div>
       <div class="demo-arrow-row">
         <div class="demo-bldg" id="dov-bldg"></div>
-        <div class="demo-arrow">➜</div>
-        <div class="demo-reward"><div class="pd" style="width:12px;height:12px;"></div><span id="dov-mat"></span></div>
+        <span style="font-size:18px;color:#808080;">➜</span>
+        <div class="demo-reward"><div class="pd" style="width:13px;height:13px;"></div><span id="dov-mat"></span></div>
       </div>
       <div class="demo-note" id="dov-note"></div>
       <div class="demo-btn-row">
@@ -173,42 +196,93 @@
       </div>
     </div>
   </div>
+
+  <!-- 장인 초과 모달 -->
+  <div class="modal-overlay" id="mole-modal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-title">🦔 두더지 장인이 모두 일하고 있어요!</div>
+      <div class="modal-body">진행 중인 업그레이드를 즉시 완료하고 두더지를 불러올까요?<br><br>즉시 완료 대상: <b id="modal-target"></b></div>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeMoleModal()">취소</button>
+        <button class="modal-go" id="modal-go-btn" onclick="doMoleForce()"><div class="gd"></div><span id="modal-cost"></span> 즉시완료</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast-el"></div>
 </div>
 </div>
 
 <script>
-let gems=88,parts=24;
-const TILES=[
-  {id:0,name:'캣타워',icon:'🗼',type:'finite',status:'active',level:3,maxLevel:20,uses:23,maxUses:50,repairMin:30,happy:5,repairCostBase:10},
-  {id:1,name:'급식소',icon:'🍚',type:'finite',status:'broken',level:2,maxLevel:20,uses:0,maxUses:40,repairMin:40,happy:4,repairCostBase:8},
-  {id:2,name:'텃밭',icon:'🌱',type:'finite',status:'repairing',level:5,maxLevel:20,uses:0,maxUses:60,repairMin:25,happy:6,timerSec:2033,repairCostBase:12},
-  {id:3,name:'관리사무소',icon:'🏢',type:'infinite',status:'active',level:1,maxLevel:1,uses:Infinity,maxUses:Infinity,repairMin:null,happy:null,repairCostBase:0},
+// ── 레벨별 업그레이드 테이블 ──
+const UPG_TABLE = [
+  {time:60,   coin:10,  part:0},
+  {time:120,  coin:10,  part:0},
+  {time:300,  coin:10,  part:0},
+  {time:1200, coin:10,  part:0},
+  {time:3600, coin:10,  part:10},
 ];
-let selId=null,upgPreview=false,repairTicks={};
+function upgCost(lv){ return UPG_TABLE[Math.min(lv-1, UPG_TABLE.length-1)]; }
+function upgTime(lv){ return (UPG_TABLE[Math.min(lv-1, UPG_TABLE.length-1)]||{time:3600}).time; }
+
+// ── 상태 ──
+let coins=1240, gems=88, parts=24;
+let moleTotal=2, moleBusy=0; // 장인 슬롯
+let selId=null, upgPreview=false;
+const ticks={};
+let moleForceTargetId=null;
+
+const TILES=[
+  {id:0,name:'캣타워',icon:'🗼',type:'finite',status:'active',
+   level:3,maxLevel:20,uses:23,maxUses:500,happy:5},
+  {id:1,name:'급식소',icon:'🍚',type:'finite',status:'broken',
+   level:2,maxLevel:20,uses:0,maxUses:400,happy:4},
+  {id:2,name:'텃밭',icon:'🌱',type:'finite',status:'upgrading',
+   level:4,maxLevel:20,uses:0,maxUses:600,happy:6, timerSec:847},
+  {id:3,name:'두더지 공방',icon:'🦔',type:'infinite',status:'active',
+   level:1,maxLevel:1,uses:Infinity,maxUses:Infinity,happy:null},
+];
+// 초기 장인 busy 카운트
+moleBusy = TILES.filter(t=>t.status==='upgrading').length;
 
 function startTick(id){
-  if(repairTicks[id])return;
-  repairTicks[id]=setInterval(()=>{
+  if(ticks[id]) return;
+  ticks[id]=setInterval(()=>{
     const t=TILES[id];
-    if(!t||t.status!=='repairing'){clearInterval(repairTicks[id]);return;}
-    t.timerSec=Math.max(0,t.timerSec-1);
+    if(!t||t.status!=='upgrading'){clearInterval(ticks[id]);return;}
+    t.timerSec=Math.max(0,(t.timerSec||0)-1);
     if(t.timerSec===0){
-      clearInterval(repairTicks[id]);delete repairTicks[id];
-      t.status='active';t.uses=t.maxUses;
-      const b=document.getElementById('t'+id).querySelector('.badge-bubble');if(b)b.remove();
+      clearInterval(ticks[id]);delete ticks[id];
+      t.status='active';t.uses=t.maxUses;t.level++;
+      moleBusy=Math.max(0,moleBusy-1);
+      removeTileBadge(id);
       document.getElementById('t'+id).querySelector('.tile-body').className='tile-body';
       document.getElementById('t'+id).querySelector('.tile-label').className='tile-label';
-      showToast(t.name+' 수리 완료!');
+      const fence=document.getElementById('t'+id).querySelector('.fence');
+      if(fence)fence.remove();
+      showToast(t.name+' Lv.'+t.level+' 업그레이드 완료!');
     }
-    if(selId===id)renderPanel();
+    if(selId===id) renderPanel();
   },1000);
 }
 startTick(2);
 
 function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-function matCalc(t){return Math.max(1,Math.round(50*t.level*0.1*t.level));}
+function matCalc(t){return Math.max(1,Math.round(t.level*t.level*0.1*50));}
+function skipCost(sec){return Math.max(1,Math.ceil((sec/60+1)*2));}
 
+function removeTileBadge(id){
+  const b=document.getElementById('t'+id).querySelector('.badge');
+  if(b)b.remove();
+}
+function setTileBadge(id,cls,text){
+  const el=document.getElementById('t'+id);
+  let b=el.querySelector('.badge');
+  if(!b){b=document.createElement('div');el.insertBefore(b,el.firstChild);}
+  b.className='badge '+cls;b.textContent=text;
+}
+
+// ── 선택 ──
 function selectTile(id,e){
   if(e)e.stopPropagation();
   upgPreview=false;selId=id;
@@ -231,93 +305,209 @@ function deselect(){
   document.getElementById('sel-uses').style.display='none';
   renderPanel();
 }
+
+// ── 패널 렌더 ──
 function renderPanel(){
   const p=document.getElementById('panel');
   if(selId===null){p.innerHTML='<div class="panel-empty">건물을 선택하면 정보가 표시됩니다.</div>';return;}
   const t=TILES[selId];
-  if(t.type==='infinite'){renderMgmtPanel(p);return;}
+  if(t.type==='infinite'){renderWorkshopPanel(p);return;}
+
   const lvPct=Math.round((t.level/t.maxLevel)*100);
-  const repPct=t.repairMin!=null?Math.round(((50-t.repairMin)/30)*100):0;
+  const usesPct=Math.round((t.maxUses/1000)*100);
   const hapPct=t.happy!=null?Math.round(((t.happy-4)/3)*100):0;
-  const upCost=(t.level+1)*10;
-  const usesVal=upgPreview?`<div class="sbox-val">${t.maxUses}<span class="dp">+5</span></div>`:`<div class="sbox-val">${t.maxUses}</div>`;
-  const repVal=upgPreview?`<div class="sbox-val">${t.repairMin}<span class="dm">-2</span></div>`:`<div class="sbox-val">${t.repairMin}</div>`;
-  const hapVal=upgPreview?`<div class="sbox-val">${t.happy}<span class="dp">+1</span></div>`:`<div class="sbox-val">${t.happy}</div>`;
+  const uc=upgCost(t.level);
+  const ut=upgTime(t.level);
+
+  // stat boxes: 이용횟수 + 행복도 (수리시간 없음)
+  const usesVal=upgPreview
+    ?`<div class="sbox-val">${t.maxUses}<span class="dp">+50</span></div>`
+    :`<div class="sbox-val">${t.maxUses}</div>`;
+  const hapVal=upgPreview&&t.happy!=null
+    ?`<div class="sbox-val">${t.happy}<span class="dp">+1</span></div>`
+    :`<div class="sbox-val">${t.happy??'—'}</div>`;
+
   const stats=`<div class="stats-row">
-    <div class="sbox"><div class="sbox-top"><span class="sbox-icon">🔧</span><span class="sbox-label">이용 횟수 (회)</span></div>${usesVal}<div class="ptrack"><div class="pfill-u" style="width:${Math.round(t.maxUses)}%"></div></div></div>
-    ${t.repairMin!=null?`<div class="sbox"><div class="sbox-top"><span class="sbox-icon">⏱</span><span class="sbox-label">수리 시간 (분)</span></div>${repVal}<div class="ptrack"><div class="pfill-r" style="width:${repPct}%"></div></div></div>`:''}
-    ${t.happy!=null?`<div class="sbox"><div class="sbox-top"><span class="sbox-icon">❤️</span><span class="sbox-label">행복도 (%)</span></div>${hapVal}<div class="ptrack"><div class="pfill-h" style="width:${hapPct}%"></div></div></div>`:''}
+    <div class="sbox"><div class="sbox-top"><span class="sbox-icon">🔧</span><span class="sbox-label">이용 횟수 (회)</span></div>${usesVal}<div class="ptrack"><div class="pfill-u" style="width:${usesPct}%"></div></div></div>
+    <div class="sbox"><div class="sbox-top"><span class="sbox-icon">❤️</span><span class="sbox-label">행복도 (%)</span></div>${hapVal}<div class="ptrack"><div class="pfill-h" style="width:${hapPct}%"></div></div></div>
   </div>`;
+
+  // 장인 슬롯 표시
+  let slotHtml='<div class="mole-slots"><span class="mole-icon">🦔</span>';
+  for(let i=0;i<moleTotal;i++){
+    const busy=i<moleBusy;
+    slotHtml+=`<div class="slot-pip${busy?' busy':' active'}" title="${busy?'작업중':'대기중'}"></div>`;
+  }
+  slotHtml+=`<span style="margin-left:3px;font-size:10px;color:#7a6e5a;">장인 ${moleTotal-moleBusy}/${moleTotal} 대기</span></div>`;
+
   let action='',br='';
+
   if(t.status==='broken'){
-    action=`<div class="repair-choice"><button class="btn-repair" onclick="doStartRepair(${selId})">🔧 수리하기</button><button class="btn-demo-s" onclick="openDemoOv(${selId})">철거</button></div>`;
+    action=`<div class="broken-notice">
+      <div class="broken-notice-text">이용 횟수 소진 — 수리가 필요합니다.<br><span style="font-size:9px;color:#a09080;">수리 시 전체 고양이 행복도 +1%</span></div>
+      <button class="btn-instant-repair" onclick="doInstantRepair(${selId})">즉시 수리</button>
+    </div>`;
     br=`<div class="btn-trash" onclick="openDemoOv(${selId})">🗑</div>`;
-  } else if(t.status==='repairing'){
-    const sc=Math.max(1,Math.ceil((t.timerSec/60+1)*2));
-    action=`<div class="repair-bar"><div><div class="repair-time-label">수리 완료까지 남은 시간</div><div class="repair-timer">${fmt(t.timerSec)}</div></div><button class="btn-skip" onclick="skipRepair(${selId},${sc})"><div class="gd"></div>${sc} 즉시완료</button></div>`;
+  } else if(t.status==='upgrading'){
+    const sc=skipCost(t.timerSec||0);
+    action=`<div class="upg-bar">
+      <div class="upg-bar-info">
+        <div class="upg-bar-label">업그레이드 완료까지 남은 시간</div>
+        <div class="upg-bar-timer">${fmt(t.timerSec||0)}</div>
+      </div>
+      <button class="btn-skip-upg" onclick="doSkipUpg(${selId},${sc})"><div class="gd"></div>${sc} 즉시완료</button>
+    </div>`;
     br=`<div style="width:30px;"></div>`;
   } else {
-    action=upgPreview
-      ?`<div class="upg-row"><button class="btn-cancel-s" onclick="upgPreview=false;renderPanel()">그만두기</button><button class="btn-confirm-s" onclick="doUpgrade(${selId})"><div class="gd"></div>확인 ${upCost}</button></div>`
-      :`<button class="btn-upg" onclick="upgPreview=true;renderPanel()"><div class="gd"></div>${upCost} 업그레이드</button>`;
+    // active
+    const costLabel=uc.part>0
+      ?`<div class="cd" style="width:8px;height:8px;margin-right:1px;"></div>${uc.coin} + <div class="pd" style="width:8px;height:8px;margin:0 1px;display:inline-block;"></div>${uc.part}`
+      :`<div class="cd" style="width:8px;height:8px;margin-right:2px;"></div>${uc.coin}`;
+    if(upgPreview){
+      action=`${slotHtml}<div class="upg-row">
+        <button class="btn-cancel-s" onclick="upgPreview=false;renderPanel()">그만두기</button>
+        <button class="btn-confirm-s coin" onclick="confirmUpgrade(${selId})">${costLabel} 확인 (${fmt(ut)})</button>
+      </div>`;
+    } else {
+      action=`${slotHtml}<button class="btn-upg coin" onclick="upgPreview=true;renderPanel()">
+        ${costLabel} &nbsp;업그레이드 (${fmt(ut)})
+      </button>`;
+    }
     br=`<div class="btn-trash" onclick="openDemoOv(${selId})">🗑</div>`;
   }
+
   p.innerHTML=`<div class="pinner">
     <div class="lv-row"><div class="lv-tag">Level ${t.level}</div><div class="lv-track"><div class="lv-fill" style="width:${lvPct}%"></div></div><div class="lv-max">/ ${t.maxLevel}</div></div>
     ${stats}${action}
     <div class="bottom-row"><div class="btn-x" onclick="deselect()">✕</div><div style="font-size:10px;color:#a09080;">${t.name} Lv.${t.level}</div>${br}</div>
   </div>`;
 }
-function renderMgmtPanel(p){
-  const active=TILES.filter(t=>t.type==='finite'&&t.status==='active');
-  const repairing=TILES.filter(t=>t.status==='repairing');
-  const broken=TILES.filter(t=>t.status==='broken');
-  const aR=active.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val">${t.uses}/${t.maxUses}</span></div>`).join('');
-  const bR=broken.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val mgmt-item-red">수리 필요</span></div>`).join('');
-  const rR=repairing.map(t=>`<div class="mgmt-item"><span class="mgmt-item-name">${t.name}</span><span class="mgmt-item-val mgmt-item-org">${fmt(t.timerSec||0)}</span></div>`).join('');
+
+function renderWorkshopPanel(p){
+  const upgrading=TILES.filter(t=>t.status==='upgrading');
+  const rows=upgrading.map(t=>`
+    <div class="wb-item" onclick="selectTile(${t.id},null)">
+      <span class="wb-item-name">${t.icon} ${t.name} Lv.${t.level}→${t.level+1}</span>
+      <span class="wb-item-time">${fmt(t.timerSec||0)}</span>
+    </div>`).join('');
+
+  // 장인 슬롯
+  let slotHtml='<div class="mole-slots" style="margin-bottom:4px;"><span class="mole-icon">🦔</span>';
+  for(let i=0;i<moleTotal;i++){
+    const busy=i<moleBusy;
+    slotHtml+=`<div class="slot-pip${busy?' busy':' active'}"></div>`;
+  }
+  slotHtml+=`<span style="margin-left:4px;font-size:10px;color:#7a6e5a;">장인 ${moleTotal-moleBusy}/${moleTotal} 대기</span>
+    <button style="margin-left:auto;font-size:9px;background:#e8e0cc;border:none;border-radius:5px;padding:2px 6px;cursor:pointer;color:#5a4020;" onclick="expandMole()">확장 ${moleTotal===2?'100':moleTotal===3?'150':'200'}💎</button>
+  </div>`;
+
   p.innerHTML=`<div class="pinner">
-    <div class="mgmt-board"><div class="mgmt-row">
-      <div class="mgmt-col"><div class="mgmt-col-title">운영중</div>${aR||'<div style="font-size:10px;color:#a09080;padding:2px 0;">없음</div>'}${bR?`<div class="mgmt-col-title" style="margin-top:5px;">파손</div>${bR}`:''}</div>
-      <div class="mgmt-divider"></div>
-      <div class="mgmt-col"><div class="mgmt-col-title">수리중</div>${rR||'<div style="font-size:10px;color:#a09080;padding:2px 0;">없음</div>'}</div>
-    </div></div>
+    ${slotHtml}
+    <div class="workshop-board">
+      <div class="wb-title">업그레이드 중인 건물</div>
+      ${rows||'<div class="wb-empty">진행 중인 업그레이드가 없습니다.</div>'}
+    </div>
     <button class="btn-catalog" onclick="showToast('건물 도감은 추후 구현 예정입니다.')">건물 도감 보기</button>
-    <div class="bottom-row"><div class="btn-x" onclick="deselect()">✕</div><div style="font-size:10px;color:#a09080;">관리사무소</div><div style="width:30px;"></div></div>
+    <div class="bottom-row"><div class="btn-x" onclick="deselect()">✕</div><div style="font-size:10px;color:#a09080;">두더지 공방</div><div style="width:30px;"></div></div>
   </div>`;
 }
-function doStartRepair(id){
-  const t=TILES[id];t.status='repairing';t.timerSec=1800;
-  const el=document.getElementById('t'+id);
-  let b=el.querySelector('.badge-bubble');
-  if(!b){b=document.createElement('div');el.insertBefore(b,el.firstChild);}
-  b.className='badge-bubble badge-repair';b.textContent='수리중';
-  el.querySelector('.tile-body').className='tile-body repairing';
-  el.querySelector('.tile-label').className='tile-label repairing';
-  startTick(id);upgPreview=false;renderPanel();showToast(t.name+' 수리를 시작합니다!');
-}
-function skipRepair(id,cost){
-  if(gems<cost){showToast('보석이 부족합니다.');return;}
-  gems-=cost;document.getElementById('gems-d').textContent=gems;
-  clearInterval(repairTicks[id]);delete repairTicks[id];
-  const t=TILES[id];t.status='active';t.uses=t.maxUses;t.timerSec=0;
-  const el=document.getElementById('t'+id);
-  const b=el.querySelector('.badge-bubble');if(b)b.remove();
-  el.querySelector('.tile-body').className='tile-body';
-  el.querySelector('.tile-label').className='tile-label';
+
+// ── 액션 ──
+function doInstantRepair(id){
+  const t=TILES[id];
+  t.status='active';t.uses=t.maxUses;
+  removeTileBadge(id);
+  document.getElementById('t'+id).querySelector('.tile-body').className='tile-body';
+  document.getElementById('t'+id).querySelector('.tile-label').className='tile-label';
+  upgPreview=false;
+  showToast(t.name+' 수리 완료! 전체 행복도 +1%');
   document.getElementById('sel-uses').innerHTML='남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
-  upgPreview=false;renderPanel();showToast('즉시 수리 완료!');
+  renderPanel();
 }
-function doUpgrade(id){
-  const t=TILES[id];const cost=(t.level+1)*10;
+
+function confirmUpgrade(id){
+  // 장인 슬롯 확인
+  if(moleBusy>=moleTotal){
+    // 가장 짧게 남은 업그레이드 대상 찾기
+    const upgrading=TILES.filter(t=>t.status==='upgrading');
+    const shortest=upgrading.sort((a,b)=>(a.timerSec||0)-(b.timerSec||0))[0];
+    if(shortest){
+      moleForceTargetId=shortest.id;
+      const sc=skipCost(shortest.timerSec||0);
+      document.getElementById('modal-target').textContent=shortest.name+' ('+fmt(shortest.timerSec||0)+' 남음)';
+      document.getElementById('modal-cost').textContent=sc;
+      document.getElementById('mole-modal').style.display='flex';
+      return;
+    }
+  }
+  startUpgrade(id);
+}
+
+function startUpgrade(id){
+  const t=TILES[id];
+  if(t.level>=t.maxLevel){showToast('최대 레벨입니다.');return;}
+  const uc=upgCost(t.level);
+  if(coins<uc.coin){showToast('코인이 부족합니다.');return;}
+  if(parts<uc.part){showToast('부품이 부족합니다.');return;}
+  coins-=uc.coin;parts-=uc.part;
+  document.getElementById('coins-d').textContent=coins;
+  document.getElementById('parts-d').textContent=parts;
+  t.status='upgrading';t.timerSec=upgTime(t.level);t.uses=0;
+  moleBusy++;
+  upgPreview=false;
+  setTileBadge(id,'badge-upgrading','업그레이드 중');
+  document.getElementById('t'+id).querySelector('.tile-body').className='tile-body upgrading';
+  document.getElementById('t'+id).querySelector('.tile-label').className='tile-label upgrading';
+  // 공사 펜스
+  const tb=document.getElementById('t'+id).querySelector('.tile-body');
+  if(!tb.querySelector('.fence')){const f=document.createElement('div');f.className='fence';f.textContent='🦔';tb.appendChild(f);}
+  startTick(id);
+  showToast(t.name+' 업그레이드 시작! ('+fmt(t.timerSec)+')');
+  document.getElementById('sel-uses').innerHTML='남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
+  renderPanel();
+}
+
+function doSkipUpg(id,cost){
   if(gems<cost){showToast('보석이 부족합니다.');return;}
   gems-=cost;document.getElementById('gems-d').textContent=gems;
-  t.level++;t.maxUses=Math.min(t.maxUses+5,100);
-  if(t.repairMin!=null)t.repairMin=Math.max(t.repairMin-2,20);
-  if(t.happy!=null)t.happy=Math.min(t.happy+1,7);
+  clearInterval(ticks[id]);delete ticks[id];
+  const t=TILES[id];t.level++;t.status='active';t.uses=t.maxUses;t.timerSec=0;
+  moleBusy=Math.max(0,moleBusy-1);
+  removeTileBadge(id);
+  const tb=document.getElementById('t'+id).querySelector('.tile-body');
+  tb.className='tile-body';
+  const fence=tb.querySelector('.fence');if(fence)fence.remove();
+  document.getElementById('t'+id).querySelector('.tile-label').className='tile-label';
   upgPreview=false;
   document.getElementById('sel-uses').innerHTML='남은 이용 횟수 <b style="color:#e03030;">'+t.uses+'/'+t.maxUses+'</b>';
-  renderPanel();showToast('Lv.'+t.level+' 업그레이드 완료!');
+  showToast(t.name+' Lv.'+t.level+' 즉시 완료!');
+  renderPanel();
 }
+
+function closeMoleModal(){document.getElementById('mole-modal').style.display='none';moleForceTargetId=null;}
+function doMoleForce(){
+  if(moleForceTargetId===null)return;
+  const forced=TILES[moleForceTargetId];
+  const sc=skipCost(forced.timerSec||0);
+  if(gems<sc){showToast('보석이 부족합니다.');closeMoleModal();return;}
+  gems-=sc;document.getElementById('gems-d').textContent=gems;
+  closeMoleModal();
+  doSkipUpg(moleForceTargetId,0); // 이미 gem 차감했으므로 0
+  // 이제 슬롯 생겼으니 원래 업그레이드 시작
+  if(selId!==null) startUpgrade(selId);
+}
+
+function expandMole(){
+  const costs=[100,150,200];
+  const idx=moleTotal-2;
+  if(moleTotal>=5){showToast('장인은 최대 5마리까지 확장할 수 있습니다.');return;}
+  const cost=costs[idx]||200;
+  if(gems<cost){showToast('보석이 부족합니다.');return;}
+  gems-=cost;document.getElementById('gems-d').textContent=gems;
+  moleTotal++;showToast('두더지 장인이 '+moleTotal+'마리가 되었습니다!');
+  renderPanel();
+}
+
 function openDemoOv(id){
   const t=TILES[id];const mat=matCalc(t);
   document.getElementById('dov-bldg').textContent=t.name+' Lv.'+t.level;
@@ -330,10 +520,12 @@ function closeDemoOv(){document.getElementById('demo-ov').style.display='none';}
 function doDemo(){
   const t=TILES[selId];const mat=matCalc(t);
   parts+=mat;document.getElementById('parts-d').textContent=parts;
+  if(t.status==='upgrading'){moleBusy=Math.max(0,moleBusy-1);clearInterval(ticks[selId]);}
   document.getElementById('t'+selId).style.display='none';
   TILES[selId].status='demolished';
   closeDemoOv();deselect();showToast('철거 완료! 부품 '+mat+'개 획득.');
 }
+
 let toastTm;
 function showToast(m){
   const el=document.getElementById('toast-el');
